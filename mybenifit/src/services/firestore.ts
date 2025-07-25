@@ -314,6 +314,152 @@ export const workoutService = {
   }
 };
 
+// Dashboard Services
+export const dashboardService = {
+  // Daily Metrics
+  async createDailyMetrics(metrics: {
+    userId: string;
+    date: string; // YYYY-MM-DD format
+    steps: number;
+    caloriesBurned: number;
+    activeMinutes: number;
+    distance: number;
+  }): Promise<string> {
+    const docRef = await addDoc(collection(db, 'dailyMetrics'), {
+      ...metrics,
+      createdAt: serverTimestamp()
+    });
+    return docRef.id;
+  },
+
+  async getDailyMetrics(userId: string, date: string): Promise<any> {
+    const q = query(
+      collection(db, 'dailyMetrics'),
+      where('userId', '==', userId),
+      where('date', '==', date)
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
+    }
+    return null;
+  },
+
+  async updateDailyMetrics(id: string, updates: any): Promise<void> {
+    const docRef = doc(db, 'dailyMetrics', id);
+    await updateDoc(docRef, updates);
+  },
+
+  async getWeeklyMetrics(userId: string, startDate: string, endDate: string): Promise<any[]> {
+    const q = query(
+      collection(db, 'dailyMetrics'),
+      where('userId', '==', userId),
+      where('date', '>=', startDate),
+      where('date', '<=', endDate),
+      orderBy('date', 'asc')
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  },
+
+  // User Settings
+  async createUserSettings(settings: {
+    userId: string;
+    dailyStepsTarget: number;
+    theme?: string;
+    notifications?: boolean;
+  }): Promise<string> {
+    const docRef = await addDoc(collection(db, 'userSettings'), {
+      ...settings,
+      createdAt: serverTimestamp()
+    });
+    return docRef.id;
+  },
+
+  async getUserSettings(userId: string): Promise<any> {
+    const q = query(
+      collection(db, 'userSettings'),
+      where('userId', '==', userId)
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
+    }
+    return null;
+  },
+
+  async updateUserSettings(id: string, updates: any): Promise<void> {
+    const docRef = doc(db, 'userSettings', id);
+    await updateDoc(docRef, updates);
+  },
+
+  // Listen to user settings
+  subscribeToUserSettings(userId: string, callback: (settings: any) => void) {
+    const q = query(
+      collection(db, 'userSettings'),
+      where('userId', '==', userId)
+    );
+    return onSnapshot(q, (querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        callback({ id: doc.id, ...doc.data() });
+      } else {
+        callback(null);
+      }
+    });
+  },
+
+  // Listen to daily metrics
+  subscribeToDailyMetrics(userId: string, date: string, callback: (metrics: any) => void) {
+    const q = query(
+      collection(db, 'dailyMetrics'),
+      where('userId', '==', userId),
+      where('date', '==', date)
+    );
+    return onSnapshot(q, (querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        callback({ id: doc.id, ...doc.data() });
+      } else {
+        callback(null);
+      }
+    });
+  },
+
+  // Get aggregated dashboard data
+  async getDashboardData(userId: string): Promise<{
+    todayMetrics: any;
+    weeklyData: any[];
+    recentActivities: ExtendedActivity[];
+    userGoals: Goal[];
+    userSettings: any;
+  }> {
+    const today = new Date().toISOString().split('T')[0];
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+    const weekEndStr = new Date().toISOString().split('T')[0];
+
+    const [todayMetrics, weeklyData, recentActivities, userGoals, userSettings] = await Promise.all([
+      this.getDailyMetrics(userId, today),
+      this.getWeeklyMetrics(userId, weekStartStr, weekEndStr),
+      extendedActivityService.getExtendedActivitiesByUser(userId),
+      goalService.getGoalsByUser(userId),
+      this.getUserSettings(userId)
+    ]);
+
+    return {
+      todayMetrics,
+      weeklyData,
+      recentActivities: recentActivities.slice(0, 10), // Limit to 10 most recent
+      userGoals,
+      userSettings
+    };
+  }
+};
+
 // Utility functions
 export const firestoreUtils = {
   // Convert Date to Firestore Timestamp

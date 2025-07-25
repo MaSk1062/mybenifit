@@ -11,7 +11,7 @@ function SettingsPage() {
 
   // Helper components for consistent styling (re-used from other pages)
   const Card = ({ children, className = '' }) => (
-    <div className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 ${className}`}>
+    <div className={`bg-white p-6 rounded-lg shadow-sm border border-black ${className}`}>
       {children}
     </div>
   );
@@ -20,7 +20,7 @@ function SettingsPage() {
     <button
       type={type}
       onClick={onClick}
-      className={`px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 ${className}`}
+      className={`px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 ${className}`}
     >
       {children}
     </button>
@@ -28,12 +28,12 @@ function SettingsPage() {
 
   const ToggleSwitch = ({ id, label, checked, onChange }) => (
     <div className="flex items-center justify-between">
-      <label htmlFor={id} className="text-gray-700 cursor-pointer">{label}</label>
+      <label htmlFor={id} className="text-black cursor-pointer">{label}</label>
       <div
         id={id}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out
-          ${checked ? 'bg-blue-600' : 'bg-gray-200'}
+          ${checked ? 'bg-black' : 'bg-gray-200'}
         `}
       >
         <span
@@ -47,12 +47,12 @@ function SettingsPage() {
 
   const Select = ({ id, label, value, onChange, options, className = '' }) => (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label htmlFor={id} className="block text-sm font-medium text-black mb-1">{label}</label>
       <select
         id={id}
         value={value}
         onChange={onChange}
-        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
+        className={`w-full p-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent ${className}`}
       >
         {options.map(option => (
           <option key={option.value} value={option.value}>{option.label}</option>
@@ -63,13 +63,13 @@ function SettingsPage() {
 
   const Input = ({ type = 'text', placeholder = '', value, onChange, className = '', label = '' }) => (
     <div>
-      {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
+      {label && <label className="block text-sm font-medium text-black mb-1">{label}</label>}
       <input
         type={type}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
+        className={`w-full p-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent ${className}`}
       />
     </div>
   );
@@ -90,14 +90,14 @@ function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-inter antialiased flex items-center justify-center py-12">
+    <div className="min-h-screen bg-white font-inter antialiased flex items-center justify-center py-12">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">Settings</h1>
+        <h1 className="text-4xl font-extrabold text-black mb-8 text-center">Settings</h1>
 
         <div className="space-y-8">
           {/* General Settings */}
           <Card>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">General</h2>
+            <h2 className="text-2xl font-semibold text-black mb-6">General</h2>
             <div className="space-y-4">
               <Select
                 id="theme-select"
@@ -120,7 +120,7 @@ function SettingsPage() {
 
           {/* Notification Settings */}
           <Card>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Notifications</h2>
+            <h2 className="text-2xl font-semibold text-black mb-6">Notifications</h2>
             <div className="space-y-4">
               <ToggleSwitch
                 id="notifications-toggle"
@@ -145,7 +145,7 @@ function SettingsPage() {
 
           {/* Privacy Settings */}
           <Card>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Privacy</h2>
+            <h2 className="text-2xl font-semibold text-black mb-6">Privacy</h2>
             <div className="space-y-4">
               <ToggleSwitch
                 id="public-profile-toggle"
@@ -159,10 +159,10 @@ function SettingsPage() {
 
           {/* Account Settings */}
           <Card>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Account</h2>
+            <h2 className="text-2xl font-semibold text-black mb-6">Account</h2>
             <div className="space-y-4">
-              <Button className="w-full bg-red-600 hover:bg-red-700">Change Password</Button>
-              <Button className="w-full bg-red-600 hover:bg-red-700">Delete Account</Button>
+              <Button className="w-full bg-black hover:bg-gray-800">Change Password</Button>
+              <Button className="w-full bg-black hover:bg-gray-800">Delete Account</Button>
             </div>
           </Card>
 

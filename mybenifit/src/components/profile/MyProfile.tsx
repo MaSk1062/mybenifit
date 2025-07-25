@@ -21,7 +21,7 @@ const Input: React.FC<InputProps> = ({ type = 'text', placeholder = '', value, o
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
+    className={`w-full p-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent ${className}`}
     {...props}
   />
 );
@@ -33,7 +33,7 @@ interface LabelProps {
 }
 
 const Label: React.FC<LabelProps> = ({ children, htmlFor, className = '' }) => (
-  <label htmlFor={htmlFor} className={`block text-sm font-medium text-gray-700 mb-1 ${className}`}>
+  <label htmlFor={htmlFor} className={`block text-sm font-medium text-black mb-1 ${className}`}>
     {children}
   </label>
 );
@@ -51,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({ children, onClick, className = '', type
     type={type}
     onClick={onClick}
     disabled={disabled}
-    className={`px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    className={`px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
     {children}
   </button>
@@ -167,8 +167,8 @@ function ProfilePage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-800">Loading profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto"></div>
+          <p className="mt-4 text-black">Loading profile...</p>
         </div>
       </div>
     );
@@ -179,8 +179,8 @@ function ProfilePage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h1>
-          <p className="text-gray-800 mb-6">Please sign in to view your profile.</p>
+          <h1 className="text-2xl font-bold text-black mb-4">Sign In Required</h1>
+          <p className="text-black mb-6">Please sign in to view your profile.</p>
           <Link to="/signin">
             <Button>Sign In</Button>
           </Link>
@@ -192,12 +192,12 @@ function ProfilePage() {
   return (
     <div className="min-h-screen bg-white font-inter antialiased flex items-center justify-center py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">User Profile</h1>
+        <h1 className="text-4xl font-extrabold text-black mb-8 text-center">User Profile</h1>
 
-        <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+        <div className="bg-white p-8 rounded-lg shadow-lg border border-black">
           <div className="flex flex-col items-center mb-8">
             {/* Profile Picture */}
-            <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mb-4 border-4 border-blue-500">
+            <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mb-4 border-4 border-black">
               {currentUser.photoURL ? (
                 <img
                   src={currentUser.photoURL}
@@ -205,47 +205,47 @@ function ProfilePage() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white text-3xl font-bold">
+                <div className="w-full h-full bg-black flex items-center justify-center text-white text-3xl font-bold">
                   {userName ? userName.charAt(0).toUpperCase() : currentUser.email?.charAt(0).toUpperCase() || 'U'}
                 </div>
               )}
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">{userName || 'User'}</h2>
-            <p className="text-md text-gray-800">{userEmail}</p>
-            <p className="text-sm text-gray-700 mt-1">
+            <h2 className="text-3xl font-bold text-black">{userName || 'User'}</h2>
+            <p className="text-md text-black">{userEmail}</p>
+            <p className="text-sm text-gray-600 mt-1">
               Member since {currentUser.metadata.creationTime ? formatDate(currentUser.metadata.creationTime) : 'Recently'}
             </p>
           </div>
 
           {/* Firebase Auth Information Section */}
-          <div className="mb-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="text-xl font-semibold text-blue-900 mb-4">Account Information</h3>
+          <div className="mb-8 p-6 bg-gray-100 rounded-lg border border-black">
+            <h3 className="text-xl font-semibold text-black mb-4">Account Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label className="text-blue-900 font-medium">User ID</Label>
-                <p className="text-sm text-gray-800 font-mono bg-white p-2 rounded border">
+                <Label className="text-black font-medium">User ID</Label>
+                <p className="text-sm text-black font-mono bg-white p-2 rounded border border-black">
                   {currentUser.uid}
                 </p>
               </div>
               <div>
-                <Label className="text-blue-900 font-medium">Sign-in Provider</Label>
-                <p className="text-sm text-gray-800 bg-white p-2 rounded border">
+                <Label className="text-black font-medium">Sign-in Provider</Label>
+                <p className="text-sm text-black bg-white p-2 rounded border border-black">
                   {getProviderName()}
                 </p>
               </div>
               <div>
-                <Label className="text-blue-900 font-medium">Email Verified</Label>
-                <p className="text-sm text-gray-800 bg-white p-2 rounded border">
+                <Label className="text-black font-medium">Email Verified</Label>
+                <p className="text-sm text-black bg-white p-2 rounded border border-black">
                   {currentUser.emailVerified ? (
-                    <span className="text-green-600 font-medium">✓ Verified</span>
+                    <span className="text-black font-medium">✓ Verified</span>
                   ) : (
-                    <span className="text-red-600 font-medium">✗ Not Verified</span>
+                    <span className="text-black font-medium">✗ Not Verified</span>
                   )}
                 </p>
               </div>
               <div>
-                <Label className="text-blue-900 font-medium">Last Sign In</Label>
-                <p className="text-sm text-gray-800 bg-white p-2 rounded border">
+                <Label className="text-black font-medium">Last Sign In</Label>
+                <p className="text-sm text-black bg-white p-2 rounded border border-black">
                   {currentUser.metadata.lastSignInTime ? formatDate(currentUser.metadata.lastSignInTime) : 'Unknown'}
                 </p>
               </div>
@@ -255,18 +255,18 @@ function ProfilePage() {
           <div className="space-y-6">
             {/* Bio Section */}
             <div>
-              <Label htmlFor="userBio" className="text-lg font-semibold text-gray-900">Bio</Label>
+              <Label htmlFor="userBio" className="text-lg font-semibold text-black">Bio</Label>
               {isEditing ? (
                 <textarea
                   id="userBio"
                   value={userBio}
                   onChange={(e) => setUserBio(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
+                  className="w-full p-3 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent min-h-[100px]"
                   rows={4}
                   placeholder="Tell us about yourself..."
                 />
               ) : (
-                <p className="text-gray-800 mt-1 p-3 bg-gray-50 rounded-md border border-gray-100">
+                <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
                   {userBio || 'No bio added yet.'}
                 </p>
               )}
@@ -275,7 +275,7 @@ function ProfilePage() {
             {/* Other Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="userName" className="text-lg font-semibold text-gray-900">Full Name</Label>
+                <Label htmlFor="userName" className="text-lg font-semibold text-black">Full Name</Label>
                 {isEditing ? (
                   <Input
                     id="userName"
@@ -285,20 +285,20 @@ function ProfilePage() {
                     placeholder="Enter your full name"
                   />
                 ) : (
-                  <p className="text-gray-800 mt-1 p-3 bg-gray-50 rounded-md border border-gray-100">
+                  <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
                     {userName || 'Not specified'}
                   </p>
                 )}
               </div>
               <div>
-                <Label htmlFor="userEmail" className="text-lg font-semibold text-gray-900">Email</Label>
-                <p className="text-gray-800 mt-1 p-3 bg-gray-50 rounded-md border border-gray-100">
+                <Label htmlFor="userEmail" className="text-lg font-semibold text-black">Email</Label>
+                <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
                   {userEmail}
                 </p>
                 <p className="text-xs text-gray-600 mt-1">Email cannot be changed</p>
               </div>
               <div>
-                <Label htmlFor="userLocation" className="text-lg font-semibold text-gray-900">Location</Label>
+                <Label htmlFor="userLocation" className="text-lg font-semibold text-black">Location</Label>
                 {isEditing ? (
                   <Input
                     id="userLocation"
@@ -308,13 +308,13 @@ function ProfilePage() {
                     placeholder="Enter your location"
                   />
                 ) : (
-                  <p className="text-gray-800 mt-1 p-3 bg-gray-50 rounded-md border border-gray-100">
+                  <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
                     {userLocation || 'Not specified'}
                   </p>
                 )}
               </div>
               <div>
-                <Label htmlFor="userAge" className="text-lg font-semibold text-gray-900">Age</Label>
+                <Label htmlFor="userAge" className="text-lg font-semibold text-black">Age</Label>
                 {isEditing ? (
                   <Input
                     id="userAge"
@@ -326,7 +326,7 @@ function ProfilePage() {
                     max="120"
                   />
                 ) : (
-                  <p className="text-gray-800 mt-1 p-3 bg-gray-50 rounded-md border border-gray-100">
+                  <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
                     {userAge || 'Not specified'}
                   </p>
                 )}
@@ -336,14 +336,14 @@ function ProfilePage() {
 
           {/* Action Buttons */}
           <div className="mt-8 flex justify-between items-center">
-            <Button onClick={handleSignOut} className="bg-red-600 hover:bg-red-700">
+            <Button onClick={handleSignOut} className="bg-black hover:bg-gray-800">
               Sign Out
             </Button>
             
             <div className="flex space-x-4">
               {isEditing ? (
                 <>
-                  <Button onClick={() => setIsEditing(false)} className="bg-gray-500 hover:bg-gray-600">
+                  <Button onClick={() => setIsEditing(false)} className="bg-gray-600 hover:bg-gray-700">
                     Cancel
                   </Button>
                   <Button onClick={handleSave} disabled={isSaving}>

@@ -1,82 +1,54 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Link, useNavigate } from 'react-router-dom'; // Corrected import for Link
-import { auth } from '../../firebase'; // Assuming this path is correct for your Firebase setup
+import { Link, useNavigate } from 'react-router-dom';
+import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
-
-
-
-// Dummy data for the dashboard
-const initialMetrics = {
-  steps: 8500,
-  caloriesBurned: 520,
-  activeMinutes: 60,
-  distance: 6.5, // km
-  dailyStepsTarget: 10000, // New daily steps target
-};
-
-const initialActivities = [
-  { id: 1, name: 'Running', duration: '30 min', distance: '5 km', calories: 350, date: '2025-07-20' },
-  { id: 2, name: 'Weightlifting', duration: '45 min', calories: 200, date: '2025-07-19' },
-  { id: 3, name: 'Cycling', duration: '60 min', distance: '15 km', calories: 450, date: '2025-07-18' },
-  { id: 4, name: 'Yoga', duration: '40 min', calories: 150, date: '2025-07-15' },
-  { id: 5, name: 'Swimming', duration: '45 min', distance: '1 km', calories: 300, date: '2025-07-12' },
-  { id: 6, name: 'Hiking', duration: '90 min', distance: '8 km', calories: 600, date: '2025-07-08' },
-];
-
-const initialGoals = [
-  { id: 1, name: 'Run 10K', currentValue: 7, target: 10, unit: 'km' }, // Added currentValue and unit
-  { id: 2, name: 'Drink 8 glasses of water daily', currentValue: 6, target: 8, unit: 'glasses' },
-  { id: 3, name: 'Workout 5 times a week', currentValue: 3, target: 5, unit: 'times' },
-];
-
-const stepsData = [
-  { name: 'Mon', steps: 4000 },
-  { name: 'Tue', steps: 6000 },
-  { name: 'Wed', steps: 7500 },
-  { name: 'Thu', steps: 8500 },
-  { name: 'Fri', steps: 7000 },
-  { name: 'Sat', steps: 9000 },
-  { name: 'Sun', steps: 10000 },
-];
+import { 
+  dashboardService, 
+  goalService, 
+  extendedActivityService,
+  firestoreUtils 
+} from '../../services/firestore';
+import type { Goal, ExtendedActivity } from '../../types/firestore';
 
 // Helper components for Shadcn-like styling
-const Card = ({ children, className = '' }) => (
-  <div className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 ${className}`}>
+const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-white p-6 rounded-lg shadow-sm border border-black ${className}`}>
     {children}
   </div>
 );
 
-const Button = ({ children, onClick, className = '', type = 'button' }) => (
+const Button = ({ children, onClick, className = '', type = 'button' }: { children: React.ReactNode; onClick?: () => void; className?: string; type?: 'button' | 'submit' | 'reset' }) => (
   <button
     type={type}
     onClick={onClick}
-    className={`px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 ${className}`}
+    className={`px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 ${className}`}
   >
     {children}
   </button>
 );
 
-const Input = ({ type = 'text', placeholder = '', value, onChange, className = '' }) => (
+const Input = ({ type = 'text', placeholder = '', value, onChange, className = '', id }: { type?: string; placeholder?: string; value: string | number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; className?: string; id?: string }) => (
   <input
+    id={id}
     type={type}
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
+    className={`w-full p-2 border border-black rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent ${className}`}
   />
 );
 
-const Label = ({ children, htmlFor, className = '' }) => (
-  <label htmlFor={htmlFor} className={`block text-sm font-medium text-gray-700 mb-1 ${className}`}>
+const Label = ({ children, htmlFor, className = '' }: { children: React.ReactNode; htmlFor?: string; className?: string }) => (
+  <label htmlFor={htmlFor} className={`block text-sm font-medium text-black mb-1 ${className}`}>
     {children}
   </label>
 );
 
-const Progress = ({ value, className = '' }) => (
+const Progress = ({ value, className = '' }: { value: number; className?: string }) => (
   <div className={`w-full bg-gray-200 rounded-full h-2.5 ${className}`}>
     <div
-      className="bg-blue-600 h-2.5 rounded-full"
+      className="bg-black h-2.5 rounded-full"
       style={{ width: `${value}%` }}
     ></div>
   </div>
@@ -84,13 +56,24 @@ const Progress = ({ value, className = '' }) => (
 
 function Dashboard() {
   // Initialize currentUser as null initially, and let useEffect update it
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [metrics, setMetrics] = useState(initialMetrics);
-  const [activities, setActivities] = useState(initialActivities);
-  const [goals, setGoals] = useState(initialGoals);
+
+  // Real data from Firebase
+  const [metrics, setMetrics] = useState({
+    steps: 0,
+    caloriesBurned: 0,
+    activeMinutes: 0,
+    distance: 0,
+    dailyStepsTarget: 10000,
+  });
+  const [activities, setActivities] = useState<ExtendedActivity[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [weeklyData, setWeeklyData] = useState<any[]>([]);
+  const [userSettings, setUserSettings] = useState<any>(null);
 
   // State for new activity form
   const [newActivityName, setNewActivityName] = useState('');
@@ -122,8 +105,121 @@ function Dashboard() {
     return () => unsubscribe();
   }, []);
 
+  // Load user data when user is authenticated
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const loadUserData = async () => {
+      try {
+        setDataLoading(true);
+        const userId = currentUser.uid;
+        
+        // Load dashboard data
+        const dashboardData = await dashboardService.getDashboardData(userId);
+        
+        // Set today's metrics
+        if (dashboardData.todayMetrics) {
+          setMetrics({
+            steps: dashboardData.todayMetrics.steps || 0,
+            caloriesBurned: dashboardData.todayMetrics.caloriesBurned || 0,
+            activeMinutes: dashboardData.todayMetrics.activeMinutes || 0,
+            distance: dashboardData.todayMetrics.distance || 0,
+            dailyStepsTarget: dashboardData.userSettings?.dailyStepsTarget || 10000,
+          });
+        } else {
+          // Create default metrics for today if none exist
+          const today = new Date().toISOString().split('T')[0];
+          await dashboardService.createDailyMetrics({
+            userId,
+            date: today,
+            steps: 0,
+            caloriesBurned: 0,
+            activeMinutes: 0,
+            distance: 0,
+          });
+        }
+
+        // Set user settings
+        if (dashboardData.userSettings) {
+          setUserSettings(dashboardData.userSettings);
+          setNewDailyStepsTarget(dashboardData.userSettings.dailyStepsTarget || 10000);
+        } else {
+          // Create default settings if none exist
+          await dashboardService.createUserSettings({
+            userId,
+            dailyStepsTarget: 10000,
+            theme: 'dark',
+            notifications: true,
+          });
+        }
+
+        // Set activities and goals
+        setActivities(dashboardData.recentActivities);
+        setGoals(dashboardData.userGoals);
+        setWeeklyData(dashboardData.weeklyData);
+        
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, [currentUser]);
+
+  // Set up real-time listeners
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const userId = currentUser.uid;
+    const today = new Date().toISOString().split('T')[0];
+
+    // Listen to daily metrics changes
+    const unsubscribeMetrics = dashboardService.subscribeToDailyMetrics(userId, today, (metrics) => {
+      if (metrics) {
+        setMetrics(prev => ({
+          ...prev,
+          steps: metrics.steps || 0,
+          caloriesBurned: metrics.caloriesBurned || 0,
+          activeMinutes: metrics.activeMinutes || 0,
+          distance: metrics.distance || 0,
+        }));
+      }
+    });
+
+    // Listen to user settings changes
+    const unsubscribeSettings = dashboardService.subscribeToUserSettings(userId, (settings) => {
+      if (settings) {
+        setUserSettings(settings);
+        setMetrics(prev => ({
+          ...prev,
+          dailyStepsTarget: settings.dailyStepsTarget || 10000,
+        }));
+        setNewDailyStepsTarget(settings.dailyStepsTarget || 10000);
+      }
+    });
+
+    // Listen to activities changes
+    const unsubscribeActivities = extendedActivityService.subscribeToUserExtendedActivities(userId, (activities) => {
+      setActivities(activities);
+    });
+
+    // Listen to goals changes
+    const unsubscribeGoals = goalService.subscribeToUserGoals(userId, (goals) => {
+      setGoals(goals);
+    });
+
+    return () => {
+      unsubscribeMetrics();
+      unsubscribeSettings();
+      unsubscribeActivities();
+      unsubscribeGoals();
+    };
+  }, [currentUser]);
+
   // Handle adding a new activity
-  const handleAddActivity = (e) => {
+  const handleAddActivity = async (e: React.FormEvent) => {
     e.preventDefault();
     const durationValue = parseFloat(newActivityDuration);
     const distanceValue = parseFloat(newActivityDistance);
@@ -149,28 +245,54 @@ function Dashboard() {
       return;
     }
     
-    const newActivity = {
-      id: activities.length + 1,
-      name: newActivityName,
-      duration: `${durationValue} min`, // Keep unit for display consistency
-      distance: newActivityDistance ? `${distanceValue} km` : '-', // Add unit if present
-      calories: caloriesValue,
-      date: newActivityDate,
-    };
-    setActivities([...activities, newActivity]);
-    // Clear form fields
-    setNewActivityName('');
-    setNewActivityDuration('');
-    setNewActivityDistance('');
-    setNewActivityCalories('');
-    setNewActivityDate('');
+    try {
+      const userId = currentUser.uid;
+      const activityDate = new Date(newActivityDate);
+      
+      // Create the activity
+      await extendedActivityService.createExtendedActivity({
+        userId,
+        activityType: newActivityName,
+        duration: durationValue,
+        distance: newActivityDistance ? distanceValue : undefined,
+        caloriesBurned: newActivityCalories ? caloriesValue : undefined,
+        notes: '',
+        date: firestoreUtils.toTimestamp(activityDate),
+      });
+
+      // Update today's metrics if the activity is for today
+      const today = new Date().toISOString().split('T')[0];
+      const activityDateStr = newActivityDate;
+      
+      if (activityDateStr === today) {
+        const currentMetrics = await dashboardService.getDailyMetrics(userId, today);
+        if (currentMetrics) {
+          await dashboardService.updateDailyMetrics(currentMetrics.id, {
+            steps: (currentMetrics.steps || 0) + Math.floor(distanceValue * 1000), // Rough estimate
+            caloriesBurned: (currentMetrics.caloriesBurned || 0) + (caloriesValue || 0),
+            activeMinutes: (currentMetrics.activeMinutes || 0) + durationValue,
+            distance: (currentMetrics.distance || 0) + (distanceValue || 0),
+          });
+        }
+      }
+
+      // Clear form fields
+      setNewActivityName('');
+      setNewActivityDuration('');
+      setNewActivityDistance('');
+      setNewActivityCalories('');
+      setNewActivityDate('');
+    } catch (error) {
+      console.error('Error adding activity:', error);
+      alert('Failed to add activity. Please try again.');
+    }
   };
 
   // Handle adding a new goal
-  const handleAddGoal = (e) => {
+  const handleAddGoal = async (e: React.FormEvent) => {
     e.preventDefault();
     const targetValue = parseFloat(newGoalTarget);
-    const currentValue = parseFloat(newGoalCurrentValue);
+    const currentValue = parseFloat(newGoalCurrentValue.toString());
 
     if (!newGoalName || !newGoalTarget || !newGoalUnit) {
       alert('Please fill in all required goal fields: Name, Target Value, and Unit.');
@@ -187,45 +309,81 @@ function Dashboard() {
       return;
     }
     
-    const newGoal = {
-      id: goals.length + 1,
-      name: newGoalName,
-      currentValue: currentValue,
-      target: targetValue,
-      unit: newGoalUnit,
-    };
-    setGoals([...goals, newGoal]);
-    // Clear form fields
-    setNewGoalName('');
-    setNewGoalTarget('');
-    setNewGoalUnit('');
-    setNewGoalCurrentValue(0);
+    try {
+      const userId = currentUser.uid;
+      const now = new Date();
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + 30); // 30 days from now
+
+      await goalService.createGoal({
+        userId,
+        type: 'steps', // Default type, you might want to make this configurable
+        target: targetValue,
+        current: currentValue,
+        startDate: firestoreUtils.toTimestamp(now),
+        targetDate: firestoreUtils.toTimestamp(targetDate),
+        achieved: currentValue >= targetValue,
+      });
+
+      // Clear form fields
+      setNewGoalName('');
+      setNewGoalTarget('');
+      setNewGoalUnit('');
+      setNewGoalCurrentValue(0);
+    } catch (error) {
+      console.error('Error adding goal:', error);
+      alert('Failed to add goal. Please try again.');
+    }
   };
 
   // Handle updating goal progress
-  const handleUpdateGoalProgress = (id, newCurrentValue) => {
+  const handleUpdateGoalProgress = async (id: string, newCurrentValue: string) => {
     const currentValue = parseFloat(newCurrentValue);
     if (isNaN(currentValue) || currentValue < 0) {
       alert('Current value must be a non-negative number.');
       return;
     }
 
-    setGoals(goals.map(goal =>
-      goal.id === id ? { ...goal, currentValue: currentValue } : goal
-    ));
+    try {
+      const goal = goals.find(g => g.id === id);
+      if (goal) {
+        await goalService.updateGoal(id, {
+          current: currentValue,
+          achieved: currentValue >= goal.target,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating goal:', error);
+      alert('Failed to update goal. Please try again.');
+    }
   };
 
   // Handle setting daily steps target
-  const handleSetDailyStepsTarget = () => {
-    const stepsTarget = parseInt(newDailyStepsTarget);
+  const handleSetDailyStepsTarget = async () => {
+    const stepsTarget = parseInt(newDailyStepsTarget.toString());
     if (isNaN(stepsTarget) || stepsTarget < 0) {
       alert('Daily steps target must be a non-negative number.');
       return;
     }
-    setMetrics(prevMetrics => ({
-      ...prevMetrics,
-      dailyStepsTarget: stepsTarget
-    }));
+
+    try {
+      if (userSettings) {
+        await dashboardService.updateUserSettings(userSettings.id, {
+          dailyStepsTarget: stepsTarget,
+        });
+      } else {
+        const userId = currentUser.uid;
+        await dashboardService.createUserSettings({
+          userId,
+          dailyStepsTarget: stepsTarget,
+          theme: 'dark',
+          notifications: true,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating steps target:', error);
+      alert('Failed to update steps target. Please try again.');
+    }
   };
 
   // Handle user sign out
@@ -240,12 +398,12 @@ function Dashboard() {
   };
 
   // Show loading state
-  if (loading) {
+  if (loading || dataLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-800">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto"></div>
+          <p className="mt-4 text-black">Loading...</p>
         </div>
       </div>
     );
@@ -256,10 +414,10 @@ function Dashboard() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h1>
-          <p className="text-gray-800 mb-6">Please sign in to access your dashboard.</p>
+          <h1 className="text-2xl font-bold text-black mb-4">Sign In Required</h1>
+          <p className="text-black mb-6">Please sign in to access your dashboard.</p>
           <Link to="/signin">
-            <Button>Sign In</Button>
+            <Button onClick={() => {}}>Sign In</Button>
           </Link>
         </div>
       </div>
@@ -267,16 +425,16 @@ function Dashboard() {
   }
 
   // Calendar functions
-  const getDaysInMonth = (date) => {
+  const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     return new Date(year, month + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (date) => {
+  const getFirstDayOfMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    return new Date(year, month, 1).getDay(); // 0 for Sunday, 1 for Monday, etc.
+    return new Date(year, month, 1).getDay();
   };
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -284,7 +442,7 @@ function Dashboard() {
 
   const renderCalendarDays = () => {
     const totalDays = getDaysInMonth(currentMonth);
-    const firstDayIndex = getFirstDayOfMonth(currentMonth); // 0 for Sunday
+    const firstDayIndex = getFirstDayOfMonth(currentMonth);
     const days = [];
 
     // Fill leading empty days
@@ -297,17 +455,18 @@ function Dashboard() {
       const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-      const hasActivity = activities.some(activity =>
-        new Date(activity.date).toDateString() === date.toDateString()
-      );
+      const hasActivity = activities.some(activity => {
+        const activityDate = firestoreUtils.toDate(activity.date);
+        return activityDate.toDateString() === date.toDateString();
+      });
 
       days.push(
         <div
           key={day}
           className={`p-2 text-center rounded-full cursor-pointer transition-colors duration-200
-            ${isToday ? 'bg-blue-200 text-blue-800 font-semibold' : ''}
-            ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}
-            ${hasActivity ? 'border-2 border-green-500' : ''}
+            ${isToday ? 'bg-black text-white font-semibold' : ''}
+            ${isSelected ? 'bg-gray-600 text-white' : 'hover:bg-gray-200 text-black'}
+            ${hasActivity ? 'border-2 border-black' : ''}
           `}
           onClick={() => setSelectedDate(date)}
         >
@@ -326,9 +485,16 @@ function Dashboard() {
     setCurrentMonth(prevMonth => new Date(prevMonth.getFullYear(), prevMonth.getMonth() + 1, 1));
   };
 
-  const activitiesForSelectedDate = activities.filter(activity =>
-    new Date(activity.date).toDateString() === selectedDate.toDateString()
-  );
+  const activitiesForSelectedDate = activities.filter(activity => {
+    const activityDate = firestoreUtils.toDate(activity.date);
+    return activityDate.toDateString() === selectedDate.toDateString();
+  });
+
+  // Prepare weekly data for chart
+  const stepsData = weeklyData.map(day => ({
+    name: new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' }),
+    steps: day.steps || 0,
+  }));
 
   // Render content based on active tab
   const renderContent = () => {
@@ -338,13 +504,13 @@ function Dashboard() {
         return (
           <div className="space-y-6">
             {/* User Welcome Section */}
-            <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+            <Card className="bg-gradient-to-r from-white to-gray-100 text-black border-2 border-black">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">
                     Welcome back, {currentUser.displayName || currentUser.email || 'User'}!
                   </h2>
-                  <p className="text-blue-100">
+                  <p className="text-black">
                     {currentUser.email} • Member since {currentUser.metadata.creationTime ? new Date(currentUser.metadata.creationTime).toLocaleDateString() : 'Recently'}
                   </p>
                 </div>
@@ -353,10 +519,10 @@ function Dashboard() {
                     <img 
                       src={currentUser.photoURL} 
                       alt="Profile" 
-                      className="w-16 h-16 rounded-full border-4 border-white"
+                      className="w-16 h-16 rounded-full border-4 border-black"
                     />
                   )}
-                  <Button onClick={handleSignOut} className="bg-white text-blue-600 hover:bg-gray-100">
+                  <Button onClick={handleSignOut} className="bg-black text-white hover:bg-gray-800">
                     Sign Out
                   </Button>
                 </div>
@@ -368,11 +534,11 @@ function Dashboard() {
               <Link to="/activities" className="block">
                 <Card className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-blue-600 text-xl">🏃</span>
+                    <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-white text-xl">🏃</span>
                     </div>
-                    <h3 className="font-semibold text-gray-900">Track Activity</h3>
-                    <p className="text-sm text-gray-700">Log your fitness activities</p>
+                    <h3 className="font-semibold text-black">Track Activity</h3>
+                    <p className="text-sm text-gray-600">Log your fitness activities</p>
                   </div>
                 </Card>
               </Link>
@@ -380,11 +546,11 @@ function Dashboard() {
               <Link to="/goals" className="block">
                 <Card className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-green-600 text-xl">🎯</span>
+                    <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-white text-xl">🎯</span>
                     </div>
-                    <h3 className="font-semibold text-gray-900">Set Goals</h3>
-                    <p className="text-sm text-gray-700">Create and track fitness goals</p>
+                    <h3 className="font-semibold text-black">Set Goals</h3>
+                    <p className="text-sm text-gray-600">Create and track fitness goals</p>
                   </div>
                 </Card>
               </Link>
@@ -392,11 +558,11 @@ function Dashboard() {
               <Link to="/workouts" className="block">
                 <Card className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-purple-600 text-xl">💪</span>
+                    <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-white text-xl">💪</span>
                     </div>
-                    <h3 className="font-semibold text-gray-900">Workouts</h3>
-                    <p className="text-sm text-gray-700">Plan and log workout sessions</p>
+                    <h3 className="font-semibold text-black">Workouts</h3>
+                    <p className="text-sm text-gray-600">Plan and log workout sessions</p>
                   </div>
                 </Card>
               </Link>
@@ -404,11 +570,11 @@ function Dashboard() {
               <Link to="/user-profile" className="block">
                 <Card className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-orange-600 text-xl">👤</span>
+                    <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-white text-xl">👤</span>
                     </div>
-                    <h3 className="font-semibold text-gray-900">Profile</h3>
-                    <p className="text-sm text-gray-700">Manage your profile</p>
+                    <h3 className="font-semibold text-black">Profile</h3>
+                    <p className="text-sm text-gray-600">Manage your profile</p>
                   </div>
                 </Card>
               </Link>
@@ -417,45 +583,46 @@ function Dashboard() {
             {/* Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Daily Steps</h3>
-                <p className="text-4xl font-bold text-blue-600">{metrics.steps}</p>
-                <p className="text-sm text-gray-700">steps today</p>
+                <h3 className="text-lg font-semibold text-black mb-2">Daily Steps</h3>
+                <p className="text-4xl font-bold text-black">{metrics.steps.toLocaleString()}</p>
+                <p className="text-sm text-gray-600">steps today</p>
               </Card>
               <Card>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Calories Burned</h3>
-                <p className="text-4xl font-bold text-red-600">{metrics.caloriesBurned}</p>
-                <p className="text-sm text-gray-700">kcal today</p>
+                <h3 className="text-lg font-semibold text-black mb-2">Calories Burned</h3>
+                <p className="text-4xl font-bold text-black">{metrics.caloriesBurned.toLocaleString()}</p>
+                <p className="text-sm text-gray-600">kcal today</p>
               </Card>
               <Card>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Active Minutes</h3>
-                <p className="text-4xl font-bold text-green-600">{metrics.activeMinutes}</p>
-                <p className="text-sm text-gray-500">minutes today</p>
+                <h3 className="text-lg font-semibold text-black mb-2">Active Minutes</h3>
+                <p className="text-4xl font-bold text-black">{metrics.activeMinutes.toLocaleString()}</p>
+                <p className="text-sm text-gray-600">minutes today</p>
               </Card>
               <Card className="md:col-span-2 lg:col-span-1">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Daily Steps Goal</h3>
-                <p className="text-2xl font-bold text-purple-600 mb-2">{metrics.steps} / {metrics.dailyStepsTarget} steps</p>
+                <h3 className="text-lg font-semibold text-black mb-2">Daily Steps Goal</h3>
+                <p className="text-2xl font-bold text-black mb-2">{metrics.steps.toLocaleString()} / {metrics.dailyStepsTarget.toLocaleString()} steps</p>
                 <Progress value={stepsProgress > 100 ? 100 : stepsProgress} />
-                {stepsProgress >= 100 && <p className="text-sm text-green-600 mt-2">Goal achieved!</p>}
+                {stepsProgress >= 100 && <p className="text-sm text-gray-600 mt-2">Goal achieved!</p>}
               </Card>
               <Card className="lg:col-span-3">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Weekly Steps Progress</h3>
+                <h3 className="text-lg font-semibold text-black mb-4">Weekly Steps Progress</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={stepsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="name" className="text-sm text-gray-600" />
-                    <YAxis className="text-sm text-gray-600" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#000000" />
+                    <XAxis dataKey="name" className="text-sm text-black" />
+                    <YAxis className="text-sm text-black" />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        border: '1px solid #e0e0e0',
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        border: '1px solid #000000',
                         borderRadius: '8px',
                         padding: '10px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                        color: '#000000'
                       }}
-                      labelStyle={{ color: '#333', fontWeight: 'bold' }}
-                      itemStyle={{ color: '#666' }}
+                      labelStyle={{ color: '#000000', fontWeight: 'bold' }}
+                      itemStyle={{ color: '#000000' }}
                     />
-                    <Line type="monotone" dataKey="steps" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
+                    <Line type="monotone" dataKey="steps" stroke="#000000" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </Card>
@@ -466,15 +633,14 @@ function Dashboard() {
         return (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">Activities</h2>
-              {/* You might want to remove this link if the current tab is already 'activities' or link to a dedicated activities page if it exists */}
+              <h2 className="text-2xl font-bold text-black">Activities</h2>
               <Link to="/activities">
-                <Button>Go to Activities</Button>
+                <Button onClick={() => {}}>Go to Activities</Button>
               </Link>
             </div>
             
             <Card>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Log New Activity</h3>
+              <h3 className="text-xl font-semibold text-black mb-4">Log New Activity</h3>
               <form onSubmit={handleAddActivity} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="activityName">Activity Name</Label>
@@ -489,7 +655,7 @@ function Dashboard() {
                   <Label htmlFor="activityDuration">Duration (minutes)</Label>
                   <Input
                     id="activityDuration"
-                    type="number" // Changed to number type
+                    type="number"
                     value={newActivityDuration}
                     onChange={(e) => setNewActivityDuration(e.target.value)}
                     placeholder="e.g., 30"
@@ -499,7 +665,7 @@ function Dashboard() {
                   <Label htmlFor="activityDistance">Distance (km, optional)</Label>
                   <Input
                     id="activityDistance"
-                    type="number" // Changed to number type
+                    type="number"
                     value={newActivityDistance}
                     onChange={(e) => setNewActivityDistance(e.target.value)}
                     placeholder="e.g., 5"
@@ -525,32 +691,34 @@ function Dashboard() {
                   />
                 </div>
                 <div className="md:col-span-2 flex justify-end">
-                  <Button type="submit">Add Activity</Button>
+                  <Button type="submit" onClick={() => {}}>Add Activity</Button>
                 </div>
               </form>
             </Card>
 
             <Card>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Recent Activities</h3>
+              <h3 className="text-xl font-semibold text-black mb-4">Recent Activities</h3>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-black">
+                  <thead className="bg-black">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-md">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Distance</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-md">Calories</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tl-md">Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Activity</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Duration</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Distance</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tr-md">Calories</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {activities.map((activity) => (
                       <tr key={activity.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{activity.date}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{activity.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{activity.duration}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{activity.distance || '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{activity.calories} kcal</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          {firestoreUtils.toDate(activity.date).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{activity.activityType}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{activity.duration} min</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{activity.distance || '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{activity.caloriesBurned || '-'} kcal</td>
                       </tr>
                     ))}
                   </tbody>
@@ -563,15 +731,14 @@ function Dashboard() {
         return (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">Goals</h2>
-              {/* You might want to remove this link if the current tab is already 'goals' or link to a dedicated goals page if it exists */}
+              <h2 className="text-2xl font-bold text-black">Goals</h2>
               <Link to="/goals">
-                <Button>Go to Goals</Button>
+                <Button onClick={() => {}}>Go to Goals</Button>
               </Link>
             </div>
             
             <Card>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Set Daily Steps Target</h3>
+              <h3 className="text-xl font-semibold text-black mb-4">Set Daily Steps Target</h3>
               <div className="flex flex-col sm:flex-row gap-4 items-end">
                 <div className="flex-grow w-full">
                   <Label htmlFor="dailyStepsTarget">Target Steps</Label>
@@ -579,7 +746,7 @@ function Dashboard() {
                     id="dailyStepsTarget"
                     type="number"
                     value={newDailyStepsTarget}
-                    onChange={(e) => setNewDailyStepsTarget(e.target.value)}
+                    onChange={(e) => setNewDailyStepsTarget(parseInt(e.target.value) || 0)}
                     placeholder="e.g., 10000"
                   />
                 </div>
@@ -588,7 +755,7 @@ function Dashboard() {
             </Card>
 
             <Card>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Set New Goal</h3>
+              <h3 className="text-xl font-semibold text-black mb-4">Set New Goal</h3>
               <form onSubmit={handleAddGoal} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="newGoalName">Goal Name</Label>
@@ -624,42 +791,41 @@ function Dashboard() {
                     id="newGoalCurrentValue"
                     type="number"
                     value={newGoalCurrentValue}
-                    onChange={(e) => setNewGoalCurrentValue(e.target.value)}
+                    onChange={(e) => setNewGoalCurrentValue(parseInt(e.target.value) || 0)}
                     placeholder="e.g., 0"
                   />
                 </div>
                 <div className="md:col-span-2 flex justify-end">
-                  <Button type="submit">Add Goal</Button>
+                  <Button type="submit" onClick={() => {}}>Add Goal</Button>
                 </div>
               </form>
             </Card>
 
             <Card>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">My Goals</h3>
+              <h3 className="text-xl font-semibold text-black mb-4">My Goals</h3>
               <div className="space-y-6">
                 {goals.map((goal) => {
-                  const progressPercentage = (goal.currentValue / goal.target) * 100;
+                  const progressPercentage = (goal.current / goal.target) * 100;
                   return (
-                    <div key={goal.id} className="border border-gray-200 p-4 rounded-md shadow-sm">
+                    <div key={goal.id} className="border border-black p-4 rounded-md shadow-sm">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium text-gray-900 text-lg">{goal.name}</span>
+                        <span className="font-medium text-black text-lg">{goal.type}</span>
                         <span className="text-sm text-gray-600">
-                          {goal.currentValue} {goal.unit} / {goal.target} {goal.unit}
+                          {goal.current} / {goal.target}
                         </span>
                       </div>
                       <Progress value={progressPercentage > 100 ? 100 : progressPercentage} className="mb-3" />
-                      {progressPercentage >= 100 && <p className="text-sm text-green-600 mt-2 font-semibold">Goal achieved!</p>}
+                      {goal.achieved && <p className="text-sm text-gray-600 mt-2 font-semibold">Goal achieved!</p>}
                       <div className="flex items-center space-x-2 mt-3">
-                        <Label htmlFor={`updateGoal-${goal.id}`} className="sr-only">Update Progress for {goal.name}</Label>
+                        <Label htmlFor={`updateGoal-${goal.id}`} className="sr-only">Update Progress for {goal.type}</Label>
                         <Input
                           id={`updateGoal-${goal.id}`}
                           type="number"
-                          value={goal.currentValue}
-                          onChange={(e) => handleUpdateGoalProgress(goal.id, e.target.value)}
+                          value={goal.current}
+                          onChange={(e) => handleUpdateGoalProgress(goal.id!, e.target.value)}
                           placeholder="Update value"
                           className="w-32"
                         />
-                        <span className="text-sm text-gray-600">{goal.unit}</span>
                       </div>
                     </div>
                   );
@@ -672,10 +838,10 @@ function Dashboard() {
         return (
           <div className="space-y-6">
             <Card>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">Activity History</h3>
+              <h3 className="text-xl font-semibold text-black mb-4 text-center">Activity History</h3>
               <div className="flex justify-between items-center mb-4">
                 <Button onClick={goToPreviousMonth}>{'<'}</Button>
-                <h4 className="text-lg font-semibold">
+                <h4 className="text-lg font-semibold text-black">
                   {months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
                 </h4>
                 <Button onClick={goToNextMonth}>{'>'}</Button>
@@ -691,20 +857,20 @@ function Dashboard() {
             </Card>
 
             <Card>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Activities on {selectedDate.toDateString()}</h3>
+              <h3 className="text-xl font-semibold text-black mb-4">Activities on {selectedDate.toDateString()}</h3>
               {activitiesForSelectedDate.length > 0 ? (
                 <ul className="space-y-2">
                   {activitiesForSelectedDate.map(activity => (
-                    <li key={activity.id} className="bg-gray-50 p-3 rounded-md border border-gray-200">
-                      <p className="font-medium text-gray-900">{activity.name}</p>
+                    <li key={activity.id} className="bg-gray-100 p-3 rounded-md border border-black">
+                      <p className="font-medium text-black">{activity.activityType}</p>
                       <p className="text-sm text-gray-600">
-                        Duration: {activity.duration} {activity.distance && `| Distance: ${activity.distance}`} {activity.calories && `| Calories: ${activity.calories} kcal`}
+                        Duration: {activity.duration} min {activity.distance && `| Distance: ${activity.distance} km`} {activity.caloriesBurned && `| Calories: ${activity.caloriesBurned} kcal`}
                       </p>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-500">No activities logged for this date.</p>
+                <p className="text-gray-600">No activities logged for this date.</p>
               )}
             </Card>
           </div>
@@ -718,10 +884,10 @@ function Dashboard() {
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-black">Dashboard</h1>
           <div className="flex items-center space-x-4">
-            <span className="text-gray-800">Welcome, {currentUser.displayName || currentUser.email || 'User'}!</span>
-            <Button onClick={handleSignOut} className="bg-red-600 hover:bg-red-700">
+            <span className="text-black">Welcome, {currentUser.displayName || currentUser.email || 'User'}!</span>
+            <Button onClick={handleSignOut} className="bg-black hover:bg-gray-800">
               Sign Out
             </Button>
           </div>
@@ -735,8 +901,8 @@ function Dashboard() {
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-700 hover:text-gray-900'
+                  ? 'bg-black text-white shadow-sm'
+                  : 'text-gray-600 hover:text-black'
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -745,7 +911,7 @@ function Dashboard() {
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-black p-6">
           {renderContent()}
         </div>
       </div>

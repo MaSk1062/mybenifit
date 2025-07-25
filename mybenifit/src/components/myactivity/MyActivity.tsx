@@ -317,7 +317,6 @@ function ActivityLogger() {
       date: firestoreUtils.toTimestamp(new Date(activityDate)) // Convert string date to Firestore Timestamp
     };
 
-    // --- SOLUTION START ---
     // Conditionally add optional fields only if they have a non-empty string value
     if (distance.trim() !== '') {
       activityData.distance = parseFloat(distance);
@@ -330,8 +329,6 @@ function ActivityLogger() {
     if (notes.trim() !== '') {
         activityData.notes = notes;
     }
-    // --- SOLUTION END ---
-
 
     try {
       setIsSubmitting(true);
@@ -373,10 +370,13 @@ function ActivityLogger() {
     setCaloriesBurned(activity.caloriesBurned?.toString() || '');
     setNotes(activity.notes || '');
     // Ensure date is correctly converted to YYYY-MM-DD string
+    // Add check for null/undefined activity.date before calling toDate()
     setActivityDate(
-      activity.date instanceof Date 
-        ? activity.date.toISOString().split('T')[0]
-        : activity.date.toDate().toISOString().split('T')[0]
+      activity.date 
+        ? (activity.date instanceof Date 
+            ? activity.date.toISOString().split('T')[0]
+            : activity.date.toDate().toISOString().split('T')[0])
+        : new Date().toISOString().split('T')[0] // Fallback to current date if date is null/undefined
     );
     
     // Scroll to form for easier editing
@@ -441,12 +441,17 @@ function ActivityLogger() {
         activities: activities.map(activity => ({
           ...activity,
           // Convert Firestore Timestamp objects to ISO date strings for export
-          date: activity.date instanceof Date 
-            ? activity.date.toISOString()
-            : activity.date.toDate().toISOString(),
-          timestamp: activity.timestamp instanceof Date 
-            ? activity.timestamp.toISOString()
-            : activity.timestamp.toDate().toISOString()
+          // Add null/undefined checks for activity.date and activity.timestamp
+          date: activity.date 
+            ? (activity.date instanceof Date 
+                ? activity.date.toISOString()
+                : activity.date.toDate().toISOString())
+            : null, // or a default value, e.g., ''
+          timestamp: activity.timestamp 
+            ? (activity.timestamp instanceof Date 
+                ? activity.timestamp.toISOString()
+                : activity.timestamp.toDate().toISOString())
+            : null // or a default value, e.g., ''
         }))
       };
 
@@ -511,11 +516,11 @@ function ActivityLogger() {
       <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-gray-900">Sign In Required</CardTitle>
+            <CardTitle className="text-center text-black">Sign In Required</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center space-y-4">
-              <p className="text-gray-800">Please sign in to log and view your activities.</p>
+              <p className="text-black">Please sign in to log and view your activities.</p>
               <div className="flex justify-center">
                 <Button 
                   variant="outline" 
@@ -534,21 +539,21 @@ function ActivityLogger() {
   return (
     <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-4xl mx-auto mt-8">
       {/* User Information */}
-      <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+      <div className="mb-6 p-4 bg-gray-100 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-blue-900">
+            <h3 className="text-lg font-semibold text-black">
               Welcome back, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
             </h3>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-gray-600">
               User ID: {currentUser.uid}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-gray-600">
               {currentUser.email}
             </p>
-            <p className="text-xs text-blue-600 mb-2">
+            <p className="text-xs text-gray-500 mb-2">
               Last sign in: {currentUser.metadata.lastSignInTime ? 
                 new Date(currentUser.metadata.lastSignInTime).toLocaleDateString() : 'Unknown'}
             </p>
@@ -557,7 +562,7 @@ function ActivityLogger() {
               variant="outline"
               size="sm"
               onClick={handleSignOut}
-              className="text-red-600 border-red-300 hover:bg-red-50"
+              className="text-black border-black hover:bg-gray-200"
             >
               Sign Out
             </Button>
@@ -567,35 +572,35 @@ function ActivityLogger() {
 
       {/* Activity Statistics */}
       {activities.length > 0 && (
-        <div className="mb-6 p-4 bg-purple-50 rounded-lg">
+        <div className="mb-6 p-4 bg-gray-100 rounded-lg">
           <div className="flex justify-between items-center mb-2">
-            <h4 className="text-lg font-semibold text-purple-900">Activity Summary</h4>
+            <h4 className="text-lg font-semibold text-black">Activity Summary</h4>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={handleExportActivities}
-              className="text-purple-600 border-purple-300 hover:bg-purple-50"
+              className="text-black border-black hover:bg-gray-200"
             >
               Export Data
             </Button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{activities.length}</div>
-              <div className="text-purple-800">Total Activities</div>
+              <div className="text-2xl font-bold text-black">{activities.length}</div>
+              <div className="text-black">Total Activities</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.totalDuration}</div>
-              <div className="text-purple-800">Total Minutes</div>
+              <div className="text-2xl font-bold text-black">{stats.totalDuration}</div>
+              <div className="text-black">Total Minutes</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.totalDistance.toFixed(1)}</div>
-              <div className="text-purple-800">Total Distance (km)</div>
+              <div className="text-2xl font-bold text-black">{stats.totalDistance.toFixed(1)}</div>
+              <div className="text-black">Total Distance (km)</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.totalCalories}</div>
-              <div className="text-purple-800">Total Calories</div>
+              <div className="text-2xl font-bold text-black">{stats.totalCalories}</div>
+              <div className="text-black">Total Calories</div>
             </div>
           </div>
         </div>
@@ -604,7 +609,7 @@ function ActivityLogger() {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-gray-900">
+            <CardTitle className="text-black">
               {editingActivity ? 'Edit Activity' : 'Log Your Activity'}
             </CardTitle>
             <Button
@@ -635,8 +640,8 @@ function ActivityLogger() {
           </div>
         </CardHeader>
         <CardContent>
-          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-          {message && <p className="text-green-600 text-sm mb-4 text-center">{message}</p>}
+          {error && <p className="text-black text-sm mb-4 text-center">{error}</p>}
+          {message && <p className="text-black text-sm mb-4 text-center">{message}</p>}
 
           <form onSubmit={handleLogActivity} className="space-y-4">
             <div>
@@ -729,7 +734,7 @@ function ActivityLogger() {
             <div className="flex gap-2">
               <Button 
                 type="submit" 
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-black hover:bg-gray-800"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (editingActivity ? 'Updating...' : 'Logging Activity...') : (editingActivity ? 'Update Activity' : 'Log Activity')}
@@ -771,15 +776,15 @@ function ActivityLogger() {
           </div>
         )}
 
-        <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Your Activities</h3>
+        <h3 className="text-xl font-bold text-black mb-4 text-center">Your Activities</h3>
         {loading ? (
           <div className="text-center py-8">
             <div className="inline-flex items-center gap-2">
-              <svg className="animate-spin h-6 w-6 text-purple-600" viewBox="0 0 24 24">
+              <svg className="animate-spin h-6 w-6 text-black" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
               </svg>
-              <span className="text-gray-800">Loading your activities...</span>
+              <span className="text-black">Loading your activities...</span>
             </div>
           </div>
         ) : activities.length === 0 ? (
@@ -789,11 +794,11 @@ function ActivityLogger() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No activities yet</h3>
+            <h3 className="text-lg font-medium text-black mb-2">No activities yet</h3>
             <p className="text-gray-600 mb-4">Start your fitness journey by logging your first activity!</p>
             <Button 
               onClick={() => document.getElementById('activityType')?.focus()}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-black hover:bg-gray-800"
             >
               Log Your First Activity
             </Button>
@@ -801,52 +806,56 @@ function ActivityLogger() {
         ) : (
           <div className="space-y-4">
             {filteredActivities.map((activity) => (
-              <Card key={activity.id} className="bg-gray-50 p-4 shadow-sm border border-gray-200">
+              <Card key={activity.id} className="bg-white p-4 shadow-sm border border-black">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <CardTitle className="text-lg font-semibold text-purple-700">
+                      <CardTitle className="text-lg font-semibold text-black">
                         {activity.activityType}
                       </CardTitle>
-                      <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">
+                      <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-black">
                         {/* Render date based on type, assuming Timestamp or Date object */}
-                        {activity.date instanceof Date 
-                          ? activity.date.toLocaleDateString()
-                          : activity.date.toDate().toLocaleDateString()}
+                        {activity.date 
+                          ? (activity.date instanceof Date 
+                              ? activity.date.toLocaleDateString()
+                              : activity.date.toDate().toLocaleDateString())
+                          : 'N/A'}
                       </span>
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
                       <div>
                         <p className="text-gray-600">Duration</p>
-                        <p className="font-semibold text-gray-900">{activity.duration} min</p>
+                        <p className="font-semibold text-black">{activity.duration} min</p>
                       </div>
                       {activity.distance !== undefined && activity.distance !== null && (
                         <div>
                           <p className="text-gray-600">Distance</p>
-                          <p className="font-semibold text-gray-900">{activity.distance.toFixed(2)} km</p>
+                          <p className="font-semibold text-black">{activity.distance.toFixed(2)} km</p>
                         </div>
                       )}
                       {activity.caloriesBurned !== undefined && activity.caloriesBurned !== null && (
                         <div>
                           <p className="text-gray-600">Calories</p>
-                          <p className="font-semibold text-gray-900">{activity.caloriesBurned}</p>
+                          <p className="font-semibold text-black">{activity.caloriesBurned}</p>
                         </div>
                       )}
                       <div>
                         <p className="text-gray-600">Logged</p>
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-black">
                           {/* Render timestamp based on type, assuming Timestamp or Date object */}
-                          {activity.timestamp instanceof Date 
-                            ? activity.timestamp.toLocaleDateString()
-                            : activity.timestamp.toDate().toLocaleDateString()}
+                          {activity.timestamp 
+                            ? (activity.timestamp instanceof Date 
+                                ? activity.timestamp.toLocaleDateString()
+                                : activity.timestamp.toDate().toLocaleDateString())
+                            : 'N/A'}
                         </p>
                       </div>
                     </div>
 
                     {activity.notes && (
-                      <div className="bg-white p-3 rounded border-l-4 border-purple-500 mb-3">
-                        <p className="text-sm text-gray-700 italic">"{activity.notes}"</p>
+                      <div className="bg-gray-100 p-3 rounded border-l-4 border-black mb-3">
+                        <p className="text-sm text-black italic">"{activity.notes}"</p>
                       </div>
                     )}
                   </div>
@@ -881,10 +890,10 @@ function ActivityLogger() {
 function MyActivity() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-white p-4">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-200 mt-8 text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-4">MyBenYfit</h1>
-        <p className="text-lg text-gray-800 mb-2">Welcome to your fitness activity tracker!</p>
-        <p className="text-sm text-gray-700 mb-6">Your data is securely stored in the cloud.</p>
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-black mt-8 text-center">
+        <h1 className="text-3xl font-extrabold text-black mb-4">MyBenYfit</h1>
+        <p className="text-lg text-black mb-2">Welcome to your fitness activity tracker!</p>
+        <p className="text-sm text-gray-600 mb-6">Your data is securely stored in the cloud.</p>
       </div>
       <ActivityLogger />
     </div>

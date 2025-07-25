@@ -658,14 +658,14 @@ function Workouts() {
 
   if (!currentUser) {
     return (
-      <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-gray-900">Sign In Required</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center space-y-4">
-              <p className="text-gray-800">Please sign in to view and manage your workouts.</p>
+              <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center text-black">Sign In Required</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center space-y-4">
+                <p className="text-black">Please sign in to view and manage your workouts.</p>
               <div className="flex justify-center">
                 <Button 
                   variant="outline" 
@@ -684,21 +684,21 @@ function Workouts() {
   return (
     <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-8">
       {/* User Information */}
-      <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+      <div className="mb-6 p-4 bg-gray-100 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-blue-900">
+            <h3 className="text-lg font-semibold text-black">
               Welcome back, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
             </h3>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-gray-600">
               User ID: {currentUser.uid}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-gray-600">
               {currentUser.email}
             </p>
-            <p className="text-xs text-blue-600 mb-2">
+            <p className="text-xs text-gray-500 mb-2">
               Last sign in: {currentUser.metadata.lastSignInTime ? 
                 new Date(currentUser.metadata.lastSignInTime).toLocaleDateString() : 'Unknown'}
             </p>
@@ -707,7 +707,7 @@ function Workouts() {
               variant="outline"
               size="sm"
               onClick={handleSignOut}
-              className="text-red-600 border-red-300 hover:bg-red-50"
+              className="text-black border-black hover:bg-gray-200"
             >
               Sign Out
             </Button>
@@ -717,7 +717,7 @@ function Workouts() {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-gray-900">Your Workouts</CardTitle>
+            <CardTitle className="text-black">Your Workouts</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -746,8 +746,8 @@ function Workouts() {
           </div>
         </CardHeader>
         <CardContent>
-          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-          {message && <p className="text-green-600 text-sm mb-4 text-center">{message}</p>}
+          {error && <p className="text-black text-sm mb-4 text-center">{error}</p>}
+          {message && <p className="text-black text-sm mb-4 text-center">{message}</p>}
 
           <form onSubmit={editingWorkout ? handleUpdateWorkout : handleCreateWorkout} className="space-y-4">
             {/* Template Selection */}
@@ -809,8 +809,8 @@ function Workouts() {
             </div>
 
             {/* Exercise Management */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Exercises</h4>
+            <div className="border border-black rounded-lg p-4">
+              <h4 className="text-lg font-semibold text-black mb-4">Exercises</h4>
 
               {/* Add Exercise Form */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -827,18 +827,18 @@ function Workouts() {
 
                   {/* Exercise Suggestions */}
                   {showExerciseSuggestions && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-black rounded-md shadow-lg max-h-60 overflow-y-auto">
                       {filteredExerciseSuggestions.length > 0 ? (
                         filteredExerciseSuggestions.map(({ category, exercises }) => (
                           <div key={category}>
-                            <div className="px-3 py-1 bg-gray-100 text-xs font-medium text-gray-700">
+                            <div className="px-3 py-1 bg-gray-100 text-xs font-medium text-black">
                               {category}
                             </div>
                             {exercises.map((exercise) => (
                               <button
                                 key={exercise}
                                 type="button"
-                                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 text-black"
                                 onClick={() => handleExerciseSuggestion(exercise)}
                               >
                                 {exercise}
@@ -847,7 +847,7 @@ function Workouts() {
                           </div>
                         ))
                       ) : (
-                        <div className="px-3 py-2 text-sm text-gray-500">No suggestions found.</div>
+                        <div className="px-3 py-2 text-sm text-gray-600">No suggestions found.</div>
                       )}
                     </div>
                   )}
@@ -917,7 +917,7 @@ function Workouts() {
               <Button
                 type="button"
                 onClick={handleAddExercise}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-black hover:bg-gray-800"
               >
                 Add Exercise
               </Button>
@@ -925,13 +925,13 @@ function Workouts() {
               {/* Exercise List */}
               {exercises.length > 0 && (
                 <div className="mt-4">
-                  <h5 className="font-medium text-gray-900 mb-2">Added Exercises:</h5>
+                  <h5 className="font-medium text-black mb-2">Added Exercises:</h5>
                   <div className="space-y-2">
                     {exercises.map((exercise, index) => (
-                      <div key={index} className="flex justify-between items-center bg-gray-50 p-3 rounded border">
+                      <div key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded border border-black">
                         <div>
-                          <p className="font-medium text-gray-900">{exercise.name}</p>
-                          <p className="text-sm text-gray-700">
+                          <p className="font-medium text-black">{exercise.name}</p>
+                          <p className="text-sm text-gray-600">
                             {exercise.sets && `Sets: ${exercise.sets}`}
                             {exercise.reps && ` Reps: ${exercise.reps}`}
                             {exercise.weight && ` Weight: ${exercise.weight}kg`}
@@ -956,7 +956,7 @@ function Workouts() {
             <div className="flex gap-2">
               <Button
                 type="submit"
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-black hover:bg-gray-800"
                 disabled={loading}
               >
                 {loading ? (editingWorkout ? 'Updating...' : 'Creating...') : (editingWorkout ? 'Update Workout' : 'Create Workout')}
@@ -980,55 +980,55 @@ function Workouts() {
       <div className="mt-8">
         {/* Workout Statistics */}
         {workouts.length > 0 && (
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-100 rounded-lg">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-lg font-semibold text-blue-900">Workout Summary</h4>
+              <h4 className="text-lg font-semibold text-black">Workout Summary</h4>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleExportWorkouts}
-                className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                className="text-black border-black hover:bg-gray-200"
               >
                 Export Data
               </Button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{workouts.length}</div>
-                <div className="text-blue-800">Total Workouts</div>
+                <div className="text-2xl font-bold text-black">{workouts.length}</div>
+                <div className="text-black">Total Workouts</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-black">
                   {workouts.reduce((total, workout) => total + workout.duration, 0)}
                 </div>
-                <div className="text-blue-800">Total Minutes</div>
+                <div className="text-black">Total Minutes</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-black">
                   {workouts.reduce((total, workout) => total + workout.exercises.length, 0)}
                 </div>
-                <div className="text-blue-800">Total Exercises</div>
+                <div className="text-black">Total Exercises</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-black">
                   {new Date(Math.max(...workouts.map(w => w.date.toDate().getTime()))).toLocaleDateString()}
                 </div>
-                <div className="text-blue-800">Last Workout</div>
+                <div className="text-black">Last Workout</div>
               </div>
             </div>
           </div>
         )}
 
-        <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Your Workouts</h3>
+        <h3 className="text-xl font-bold text-black mb-4 text-center">Your Workouts</h3>
         {loading ? (
           <div className="text-center py-8">
             <div className="inline-flex items-center gap-2">
-              <svg className="animate-spin h-6 w-6 text-blue-600" viewBox="0 0 24 24">
+              <svg className="animate-spin h-6 w-6 text-black" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
               </svg>
-              <span className="text-gray-800">Loading your workouts...</span>
+              <span className="text-black">Loading your workouts...</span>
             </div>
           </div>
         ) : workouts.length === 0 ? (
@@ -1038,11 +1038,11 @@ function Workouts() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No workouts yet</h3>
+            <h3 className="text-lg font-medium text-black mb-2">No workouts yet</h3>
             <p className="text-gray-600 mb-4">Start your fitness journey by creating your first workout!</p>
             <Button 
               onClick={() => document.getElementById('workoutName')?.focus()}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-black hover:bg-gray-800"
             >
               Create Your First Workout
             </Button>
@@ -1050,18 +1050,18 @@ function Workouts() {
         ) : (
           <div className="space-y-4">
             {workouts.map((workout) => (
-              <Card key={workout.id} className="bg-gray-50 p-4 shadow-sm border border-gray-200">
+              <Card key={workout.id} className="bg-white p-4 shadow-sm border border-black">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <CardTitle className="text-lg font-semibold text-blue-700">
+                    <CardTitle className="text-lg font-semibold text-black">
                       {workout.name} - {new Date(workout.date.toDate()).toLocaleDateString()}
                     </CardTitle>
                     <CardContent className="p-0 pt-2">
-                      <p className="text-gray-800">Duration: {workout.duration} minutes</p>
-                      <p className="text-gray-800">Exercises: {workout.exercises.length}</p>
+                      <p className="text-black">Duration: {workout.duration} minutes</p>
+                      <p className="text-black">Exercises: {workout.exercises.length}</p>
                       <div className="mt-2">
-                        <p className="text-sm font-medium text-gray-900">Exercise Details:</p>
-                        <ul className="text-sm text-gray-700 mt-1 space-y-1">
+                        <p className="text-sm font-medium text-black">Exercise Details:</p>
+                        <ul className="text-sm text-gray-600 mt-1 space-y-1">
                           {workout.exercises.map((exercise, index) => (
                             <li key={index} className="ml-4">
                               • {exercise.name}

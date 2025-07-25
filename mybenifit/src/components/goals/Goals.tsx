@@ -434,11 +434,11 @@ function Goals() {
       <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-gray-900">Sign In Required</CardTitle>
+            <CardTitle className="text-center text-black">Sign In Required</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center space-y-4">
-              <p className="text-gray-800">Please sign in to view and manage your goals.</p>
+              <p className="text-black">Please sign in to view and manage your goals.</p>
               <div className="flex justify-center">
                 <Button 
                   variant="outline" 
@@ -456,28 +456,28 @@ function Goals() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-white p-4">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-200 mt-8 text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-4">MyBenYfit</h1>
-        <p className="text-lg text-gray-800 mb-2">Set Your Fitness Goals</p>
-        <p className="text-sm text-gray-700 mb-6">Track your progress and achieve your targets!</p>
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-black mt-8 text-center">
+        <h1 className="text-3xl font-extrabold text-black mb-4">MyBenYfit</h1>
+        <p className="text-lg text-black mb-2">Set Your Fitness Goals</p>
+        <p className="text-sm text-gray-600 mb-6">Track your progress and achieve your targets!</p>
       </div>
       
       {/* User Information */}
-      <div className="w-full max-w-2xl mx-auto mb-6 p-4 bg-blue-50 rounded-lg">
+      <div className="w-full max-w-2xl mx-auto mb-6 p-4 bg-gray-100 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-blue-900">
+            <h3 className="text-lg font-semibold text-black">
               Welcome back, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
             </h3>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-gray-600">
               User ID: {currentUser.uid}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-gray-600">
               {currentUser.email}
             </p>
-            <p className="text-xs text-blue-600 mb-2">
+            <p className="text-xs text-gray-500 mb-2">
               Last sign in: {currentUser.metadata.lastSignInTime ? 
                 new Date(currentUser.metadata.lastSignInTime).toLocaleDateString() : 'Unknown'}
             </p>
@@ -486,7 +486,7 @@ function Goals() {
               variant="outline"
               size="sm"
               onClick={handleSignOut}
-              className="text-red-600 border-red-300 hover:bg-red-50"
+              className="text-black border-black hover:bg-gray-200"
             >
               Sign Out
             </Button>
@@ -498,7 +498,7 @@ function Goals() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="text-gray-900">
+              <CardTitle className="text-black">
                 {editingGoal ? 'Edit Goal' : 'Create New Goal'}
               </CardTitle>
               <Button
@@ -529,8 +529,8 @@ function Goals() {
             </div>
           </CardHeader>
           <CardContent>
-            {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-            {message && <p className="text-green-600 text-sm mb-4 text-center">{message}</p>}
+            {error && <p className="text-black text-sm mb-4 text-center">{error}</p>}
+            {message && <p className="text-black text-sm mb-4 text-center">{message}</p>}
 
             <form onSubmit={editingGoal ? handleUpdateGoal : handleCreateGoal} className="space-y-4">
               <div>
@@ -589,7 +589,7 @@ function Goals() {
               <div className="flex gap-2">
                 <Button 
                   type="submit" 
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-black hover:bg-gray-800"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (editingGoal ? 'Updating...' : 'Creating...') : (editingGoal ? 'Update Goal' : 'Create Goal')}
@@ -615,41 +615,41 @@ function Goals() {
       <div className="w-full max-w-2xl mx-auto mt-8">
         {/* Goal Statistics */}
         {goals.length > 0 && (
-          <div className="mb-6 p-4 bg-green-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-100 rounded-lg">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-lg font-semibold text-green-900">Goal Summary</h4>
+              <h4 className="text-lg font-semibold text-black">Goal Summary</h4>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleExportGoals}
-                className="text-green-600 border-green-300 hover:bg-green-50"
+                className="text-black border-black hover:bg-gray-200"
               >
                 Export Data
               </Button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{goals.length}</div>
-                <div className="text-green-800">Total Goals</div>
+                <div className="text-2xl font-bold text-black">{goals.length}</div>
+                <div className="text-black">Total Goals</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-black">
                   {goals.filter(g => g.achieved).length}
                 </div>
-                <div className="text-green-800">Achieved</div>
+                <div className="text-black">Achieved</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-black">
                   {goals.filter(g => !g.achieved && g.targetDate.toDate() > new Date()).length}
                 </div>
-                <div className="text-green-800">In Progress</div>
+                <div className="text-black">In Progress</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-black">
                   {goals.filter(g => !g.achieved && g.targetDate.toDate() < new Date()).length}
                 </div>
-                <div className="text-green-800">Overdue</div>
+                <div className="text-black">Overdue</div>
               </div>
             </div>
           </div>
@@ -683,15 +683,15 @@ function Goals() {
           </Button>
         </div>
 
-        <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Your Goals</h3>
+        <h3 className="text-xl font-bold text-black mb-4 text-center">Your Goals</h3>
         {loading ? (
           <div className="text-center py-8">
             <div className="inline-flex items-center gap-2">
-              <svg className="animate-spin h-6 w-6 text-green-600" viewBox="0 0 24 24">
+              <svg className="animate-spin h-6 w-6 text-black" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
               </svg>
-              <span className="text-gray-800">Loading your goals...</span>
+              <span className="text-black">Loading your goals...</span>
             </div>
           </div>
         ) : goals.length === 0 ? (
@@ -701,11 +701,11 @@ function Goals() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No goals yet</h3>
+            <h3 className="text-lg font-medium text-black mb-2">No goals yet</h3>
             <p className="text-gray-600 mb-4">Start your fitness journey by setting your first goal!</p>
             <Button 
               onClick={() => document.getElementById('goalType')?.focus()}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-black hover:bg-gray-800"
             >
               Create Your First Goal
             </Button>
@@ -717,17 +717,17 @@ function Goals() {
               const status = getGoalStatus(goal);
               
               return (
-                <Card key={goal.id} className="bg-gray-50 p-4 shadow-sm border border-gray-200">
+                <Card key={goal.id} className="bg-white p-4 shadow-sm border border-black">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <CardTitle className="text-lg font-semibold text-green-700 capitalize">
+                        <CardTitle className="text-lg font-semibold text-black capitalize">
                           {goal.type} Goal
                         </CardTitle>
                         <span className={`px-2 py-1 text-xs rounded-full ${
-                          status === 'achieved' ? 'bg-green-100 text-green-800' :
-                          status === 'overdue' ? 'bg-red-100 text-red-800' :
-                          'bg-blue-100 text-blue-800'
+                          status === 'achieved' ? 'bg-gray-200 text-black' :
+                          status === 'overdue' ? 'bg-gray-300 text-black' :
+                          'bg-gray-100 text-black'
                         }`}>
                           {status === 'achieved' ? 'Achieved' :
                            status === 'overdue' ? 'Overdue' : 'In Progress'}
@@ -737,19 +737,19 @@ function Goals() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
                         <div>
                           <p className="text-gray-600">Target</p>
-                          <p className="font-semibold text-gray-900">{goal.target}</p>
+                          <p className="font-semibold text-black">{goal.target}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Current</p>
-                          <p className="font-semibold text-gray-900">{goal.current}</p>
+                          <p className="font-semibold text-black">{goal.current}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Progress</p>
-                          <p className="font-semibold text-gray-900">{progress.toFixed(1)}%</p>
+                          <p className="font-semibold text-black">{progress.toFixed(1)}%</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Target Date</p>
-                          <p className="font-semibold text-gray-900">
+                          <p className="font-semibold text-black">
                             {goal.targetDate.toDate().toLocaleDateString()}
                           </p>
                         </div>
@@ -759,10 +759,10 @@ function Goals() {
                       <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                         <div 
                           className={`h-2 rounded-full transition-all duration-300 ${
-                            progress >= 100 ? 'bg-green-500' :
-                            progress >= 75 ? 'bg-blue-500' :
-                            progress >= 50 ? 'bg-yellow-500' :
-                            'bg-red-500'
+                            progress >= 100 ? 'bg-black' :
+                            progress >= 75 ? 'bg-gray-600' :
+                            progress >= 50 ? 'bg-gray-400' :
+                            'bg-gray-300'
                           }`}
                           style={{ width: `${Math.min(progress, 100)}%` }}
                         ></div>

@@ -11,7 +11,7 @@ import ProfilePage from "../profile/MyProfile";
 
 export default function Home() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
+        <div className="min-h-screen bg-white">
             <Nav />
             <div className="container mx-auto px-4 py-8">
                 <Routes>
