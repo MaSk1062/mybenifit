@@ -16,6 +16,8 @@ import {
     route("/workouts", "./components/workouts/Workouts.tsx"),
     route("/analytics", "./components/analytics/Analytics.tsx"),
     route("/user-profile", "./components/profile/Myprofile.tsx"),
+    route("/privacy", "./components/privacy/Privacy.tsx"),
+    route("/terms", "./components/terms/Terms.tsx"),
     route("*?", "catchall.tsx"),
   ] satisfies RouteConfig;
   

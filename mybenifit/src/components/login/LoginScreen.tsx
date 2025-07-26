@@ -6,7 +6,7 @@ import { useState } from "react"
 import { auth } from "../../firebase.ts"
 import { useNavigate, Link } from "react-router-dom" // Corrected import for react-router-dom
 import NavBar from "../nav/nav" // Assuming NavBar exists and is desired
-import homeImage from "../../assets/benyfitImage.jpeg"
+import homeImage from "../../assets/mybenyfitImage.jpeg"
 
 // Utility function for class names
 const cn = (...classes: (string | undefined | null | false)[]): string => {

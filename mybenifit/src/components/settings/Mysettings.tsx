@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { dashboardService } from '../../services/firestore';
 import type { UserSettings } from '../../types/firestore';
@@ -286,6 +287,25 @@ function SettingsPage() {
             <div className="space-y-4">
               <Button className="w-full bg-black hover:bg-gray-800">Change Password</Button>
               <Button className="w-full bg-black hover:bg-gray-800">Delete Account</Button>
+            </div>
+          </Card>
+
+          {/* Legal & Privacy */}
+          <Card>
+            <h2 className="text-2xl font-semibold text-black mb-6">Legal & Privacy</h2>
+            <div className="space-y-4">
+              <Link 
+                to="/privacy" 
+                className="block w-full px-4 py-2 text-left text-black hover:bg-gray-100 rounded-md transition-colors duration-200"
+              >
+                Privacy Policy
+              </Link>
+              <Link 
+                to="/terms" 
+                className="block w-full px-4 py-2 text-left text-black hover:bg-gray-100 rounded-md transition-colors duration-200"
+              >
+                Terms of Service
+              </Link>
             </div>
           </Card>
 

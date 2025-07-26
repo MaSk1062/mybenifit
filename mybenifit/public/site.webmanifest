@@ -1,20 +1,20 @@
 {
   "name": "MyFitMyBenefit",
-  "short_name": "MyBenefit",
+  "short_name": "MyBenYfit",
   "description": "A comprehensive fitness and wellness tracking application",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/mybenyfit.ico",
       "sizes": "any",
       "type": "image/svg+xml"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/mybenyfit.ico",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/mybenyfit.ico",
       "sizes": "512x512",
       "type": "image/png"
     }

@@ -43,6 +43,12 @@ type Pages = {
   "/user-profile": {
     params: {};
   };
+  "/privacy": {
+    params: {};
+  };
+  "/terms": {
+    params: {};
+  };
   "/*": {
     params: {
       "*": string;
@@ -53,7 +59,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/signup" | "/login" | "/dashboard" | "/profile" | "/settings" | "/activities" | "/goals" | "/workouts" | "/analytics" | "/user-profile" | "/*";
+    page: "/" | "/signup" | "/login" | "/dashboard" | "/profile" | "/settings" | "/activities" | "/goals" | "/workouts" | "/analytics" | "/user-profile" | "/privacy" | "/terms" | "/*";
   };
   "./components/home/LandingPage.tsx": {
     id: "components/home/LandingPage";
@@ -98,6 +104,14 @@ type RouteFiles = {
   "./components/profile/Myprofile.tsx": {
     id: "components/profile/Myprofile";
     page: "/user-profile";
+  };
+  "./components/privacy/Privacy.tsx": {
+    id: "components/privacy/Privacy";
+    page: "/privacy";
+  };
+  "./components/terms/Terms.tsx": {
+    id: "components/terms/Terms";
+    page: "/terms";
   };
   "catchall.tsx": {
     id: "catchall";
