@@ -16,6 +16,9 @@ type Pages = {
   "/signup": {
     params: {};
   };
+  "/login": {
+    params: {};
+  };
   "/dashboard": {
     params: {};
   };
@@ -34,6 +37,9 @@ type Pages = {
   "/workouts": {
     params: {};
   };
+  "/analytics": {
+    params: {};
+  };
   "/user-profile": {
     params: {};
   };
@@ -47,7 +53,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/signup" | "/dashboard" | "/profile" | "/settings" | "/activities" | "/goals" | "/workouts" | "/user-profile" | "/*";
+    page: "/" | "/signup" | "/login" | "/dashboard" | "/profile" | "/settings" | "/activities" | "/goals" | "/workouts" | "/analytics" | "/user-profile" | "/*";
   };
   "./components/home/LandingPage.tsx": {
     id: "components/home/LandingPage";
@@ -56,6 +62,10 @@ type RouteFiles = {
   "./components/signup/SignInScreen.tsx": {
     id: "components/signup/SignInScreen";
     page: "/signup";
+  };
+  "./components/login/LoginScreen.tsx": {
+    id: "components/login/LoginScreen";
+    page: "/login";
   };
   "./components/dashboard/Mydash.tsx": {
     id: "components/dashboard/Mydash";
@@ -80,6 +90,10 @@ type RouteFiles = {
   "./components/workouts/Workouts.tsx": {
     id: "components/workouts/Workouts";
     page: "/workouts";
+  };
+  "./components/analytics/Analytics.tsx": {
+    id: "components/analytics/Analytics";
+    page: "/analytics";
   };
   "./components/profile/Myprofile.tsx": {
     id: "components/profile/Myprofile";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
@@ -57,7 +57,7 @@ function LandingPage() {
               <Link to="/signup" className="text-black hover:text-gray-600 font-medium transition-colors duration-200 px-3 py-2 rounded-md">
                 Sign Up
               </Link>
-              <Link to="/signin" className="text-black hover:text-gray-600 font-medium transition-colors duration-200 px-3 py-2 rounded-md">
+              <Link to="/login" className="text-black hover:text-gray-600 font-medium transition-colors duration-200 px-3 py-2 rounded-md">
                 Login
               </Link>
             </div>
@@ -103,7 +103,7 @@ function LandingPage() {
                 Get Started
               </Link>
               <Link
-                to="/signin"
+                to="/login"
                 className="px-8 py-3 rounded-md border-2 border-black text-black text-lg font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 shadow-md"
               >
                 Sign In

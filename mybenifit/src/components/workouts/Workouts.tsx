@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
 import { workoutService, firestoreUtils } from '../../services/firestore';
 import type { Workout, Exercise } from '../../types/firestore';
+import NavBar from '../nav/nav';
 
 // Reuse the UI components from MyActivity
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -682,13 +683,16 @@ function Workouts() {
   }
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-8">
+    <div className="min-h-screen flex flex-col bg-white">
+      <NavBar />
+      <div className="flex-1 flex flex-col items-center justify-start p-4">
+        <div className="p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-8">
       {/* User Information */}
       <div className="mb-6 p-4 bg-gray-100 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-black">
-              Welcome back, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
+              Lets Gooooo!!!!, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
             </h3>
             <p className="text-sm text-gray-600">
               User ID: {currentUser.uid}
@@ -702,7 +706,7 @@ function Workouts() {
               Last sign in: {currentUser.metadata.lastSignInTime ? 
                 new Date(currentUser.metadata.lastSignInTime).toLocaleDateString() : 'Unknown'}
             </p>
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
               size="sm"
@@ -710,7 +714,7 @@ function Workouts() {
               className="text-black border-black hover:bg-gray-200"
             >
               Sign Out
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
@@ -939,13 +943,13 @@ function Workouts() {
                             {exercise.distance && ` Distance: ${exercise.distance}km`}
                           </p>
                         </div>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleRemoveExercise(index)}
-                        >
-                          Remove
-                        </Button>
+                                            <Button
+                      size="sm"
+                      onClick={() => handleRemoveExercise(index)}
+                      className="bg-black text-white hover:bg-gray-800"
+                    >
+                      Remove
+                    </Button>
                       </div>
                     ))}
                   </div>
@@ -1086,9 +1090,9 @@ function Workouts() {
                       Edit
                     </Button>
                     <Button
-                      variant="destructive"
                       size="sm"
                       onClick={() => workout.id && handleDeleteWorkout(workout.id)}
+                      className="bg-black text-white hover:bg-gray-800"
                     >
                       Delete
                     </Button>
@@ -1098,6 +1102,8 @@ function Workouts() {
             ))}
           </div>
         )}
+      </div>
+      </div>
       </div>
     </div>
   );

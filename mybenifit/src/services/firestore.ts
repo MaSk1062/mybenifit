@@ -25,7 +25,8 @@ import type {
   Goal,
   Workout,
   ExtendedActivity,
-  Exercise
+  Exercise,
+  UserSettings
 } from '../types/firestore';
 
 // Profile Services
@@ -364,20 +365,16 @@ export const dashboardService = {
   },
 
   // User Settings
-  async createUserSettings(settings: {
-    userId: string;
-    dailyStepsTarget: number;
-    theme?: string;
-    notifications?: boolean;
-  }): Promise<string> {
+  async createUserSettings(settings: Omit<UserSettings, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
     const docRef = await addDoc(collection(db, 'userSettings'), {
       ...settings,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     });
     return docRef.id;
   },
 
-  async getUserSettings(userId: string): Promise<any> {
+  async getUserSettings(userId: string): Promise<UserSettings | null> {
     const q = query(
       collection(db, 'userSettings'),
       where('userId', '==', userId)
@@ -385,18 +382,21 @@ export const dashboardService = {
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];
-      return { id: doc.id, ...doc.data() };
+      return { id: doc.id, ...doc.data() } as UserSettings;
     }
     return null;
   },
 
-  async updateUserSettings(id: string, updates: any): Promise<void> {
+  async updateUserSettings(id: string, updates: Partial<UserSettings>): Promise<void> {
     const docRef = doc(db, 'userSettings', id);
-    await updateDoc(docRef, updates);
+    await updateDoc(docRef, {
+      ...updates,
+      updatedAt: serverTimestamp()
+    });
   },
 
   // Listen to user settings
-  subscribeToUserSettings(userId: string, callback: (settings: any) => void) {
+  subscribeToUserSettings(userId: string, callback: (settings: UserSettings | null) => void) {
     const q = query(
       collection(db, 'userSettings'),
       where('userId', '==', userId)
@@ -404,7 +404,7 @@ export const dashboardService = {
     return onSnapshot(q, (querySnapshot) => {
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
-        callback({ id: doc.id, ...doc.data() });
+        callback({ id: doc.id, ...doc.data() } as UserSettings);
       } else {
         callback(null);
       }

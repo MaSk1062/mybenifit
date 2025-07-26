@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
 import { Link } from 'react-router-dom';
+import NavBar from '../nav/nav';
+import { profileService } from '../../services/firestore';
+import type { Profile } from '../../types/firestore';
 
 // Helper components defined at the top
 interface InputProps {
@@ -60,6 +63,7 @@ const Button: React.FC<ButtonProps> = ({ children, onClick, className = '', type
 function ProfilePage() {
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<Profile | null>(null);
   
   // State for user profile data
   const [userName, setUserName] = useState('');
@@ -67,6 +71,9 @@ function ProfilePage() {
   const [userBio, setUserBio] = useState('');
   const [userLocation, setUserLocation] = useState('');
   const [userAge, setUserAge] = useState(0);
+  const [userHeight, setUserHeight] = useState(0);
+  const [userWeight, setUserWeight] = useState(0);
+  const [userGender, setUserGender] = useState('');
 
   // State for edit mode
   const [isEditing, setIsEditing] = useState(false);
@@ -81,19 +88,45 @@ function ProfilePage() {
       if (user) {
         setUserName(user.displayName || '');
         setUserEmail(user.email || '');
+        loadUserProfile(user.uid);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Load user data when currentUser changes
-  useEffect(() => {
-    if (currentUser) {
-      setUserName(currentUser.displayName || '');
-      setUserEmail(currentUser.email || '');
+  // Load user profile from Firestore
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const userProfile = await profileService.getProfile(userId);
+      if (userProfile) {
+        setProfile(userProfile);
+        setUserName(userProfile.fullName || '');
+        setUserEmail(userProfile.email || '');
+        setUserBio(userProfile.bio || '');
+        setUserLocation(userProfile.location || '');
+        setUserAge(userProfile.age || 0);
+        setUserHeight(userProfile.height || 0);
+        setUserWeight(userProfile.weight || 0);
+        setUserGender(userProfile.gender || '');
+      } else {
+        // Create default profile if none exists
+        const defaultProfile: Omit<Profile, 'id' | 'createdAt'> = {
+          fullName: currentUser?.displayName || '',
+          email: currentUser?.email || '',
+          bio: '',
+          location: '',
+          age: 0,
+          height: 0,
+          weight: 0,
+          gender: '',
+        };
+        await profileService.createProfile(defaultProfile);
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
     }
-  }, [currentUser]);
+  };
 
   // Handle saving changes
   const handleSave = async () => {
@@ -102,18 +135,41 @@ function ProfilePage() {
     try {
       setIsSaving(true);
       
-      // In a real app, you would save to Firestore here
-      console.log('Saving profile data:', {
+      const profileData: Partial<Profile> = {
         fullName: userName,
         email: userEmail,
         bio: userBio,
         location: userLocation,
         age: userAge,
-      });
+        height: userHeight,
+        weight: userWeight,
+        gender: userGender,
+      };
+
+      if (profile?.id) {
+        // Update existing profile
+        await profileService.updateProfile(profile.id, profileData);
+      } else {
+        // Create new profile
+        const newProfile: Omit<Profile, 'id' | 'createdAt'> = {
+          fullName: userName,
+          email: userEmail,
+          bio: userBio,
+          location: userLocation,
+          age: userAge,
+          height: userHeight,
+          weight: userWeight,
+          gender: userGender,
+        };
+        await profileService.createProfile(newProfile);
+      }
       
+      // Reload profile data
+      await loadUserProfile(currentUser.uid);
       setIsEditing(false);
     } catch (error) {
       console.error('Error saving profile:', error);
+      alert('Failed to save profile. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -162,6 +218,22 @@ function ProfilePage() {
     return 'Email/Password';
   };
 
+  // Calculate BMI
+  const calculateBMI = () => {
+    if (userHeight > 0 && userWeight > 0) {
+      const heightInMeters = userHeight / 100; // Convert cm to meters
+      const bmi = userWeight / (heightInMeters * heightInMeters);
+      return bmi.toFixed(1);
+    }
+    return null;
+  };
+
+  const bmi = calculateBMI();
+  const bmiCategory = bmi ? 
+    (parseFloat(bmi) < 18.5 ? 'Underweight' :
+     parseFloat(bmi) < 25 ? 'Normal weight' :
+     parseFloat(bmi) < 30 ? 'Overweight' : 'Obese') : null;
+
   // Show loading state
   if (loading) {
     return (
@@ -190,7 +262,9 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white font-inter antialiased flex items-center justify-center py-12">
+    <div className="min-h-screen flex flex-col bg-white">
+      <NavBar />
+      <div className="flex-1 flex flex-col items-center justify-center py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-extrabold text-black mb-8 text-center">User Profile</h1>
 
@@ -331,7 +405,87 @@ function ProfilePage() {
                   </p>
                 )}
               </div>
+              <div>
+                <Label htmlFor="userHeight" className="text-lg font-semibold text-black">Height (cm)</Label>
+                {isEditing ? (
+                  <Input
+                    id="userHeight"
+                    type="number"
+                    value={userHeight || 0}
+                    onChange={(e) => setUserHeight(parseInt(e.target.value) || 0)}
+                    placeholder="Enter your height in cm"
+                    min="50"
+                    max="300"
+                  />
+                ) : (
+                  <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
+                    {userHeight ? `${userHeight} cm` : 'Not specified'}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="userWeight" className="text-lg font-semibold text-black">Weight (kg)</Label>
+                {isEditing ? (
+                  <Input
+                    id="userWeight"
+                    type="number"
+                    value={userWeight || 0}
+                    onChange={(e) => setUserWeight(parseInt(e.target.value) || 0)}
+                    placeholder="Enter your weight in kg"
+                    min="20"
+                    max="500"
+                  />
+                ) : (
+                  <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
+                    {userWeight ? `${userWeight} kg` : 'Not specified'}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="userGender" className="text-lg font-semibold text-black">Gender</Label>
+                {isEditing ? (
+                  <select
+                    id="userGender"
+                    value={userGender}
+                    onChange={(e) => setUserGender(e.target.value)}
+                    className="w-full p-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  >
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                  </select>
+                ) : (
+                  <p className="text-black mt-1 p-3 bg-gray-100 rounded-md border border-black">
+                    {userGender || 'Not specified'}
+                  </p>
+                )}
+              </div>
             </div>
+
+            {/* Health Metrics Section */}
+            {bmi && (
+              <div className="mt-6 p-4 bg-gray-100 rounded-lg border border-black">
+                <h3 className="text-lg font-semibold text-black mb-2">Health Metrics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-black font-medium">BMI</Label>
+                    <p className="text-2xl font-bold text-black">{bmi}</p>
+                    <p className="text-sm text-gray-600">{bmiCategory}</p>
+                  </div>
+                  <div>
+                    <Label className="text-black font-medium">BMI Range</Label>
+                    <p className="text-sm text-black">
+                      Underweight: &lt; 18.5<br/>
+                      Normal: 18.5 - 24.9<br/>
+                      Overweight: 25 - 29.9<br/>
+                      Obese: ≥ 30
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -358,6 +512,7 @@ function ProfilePage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -80,4 +80,25 @@ export interface ExtendedActivity {
   notes?: string;
   date: Timestamp;
   timestamp: Timestamp;
+}
+
+// User Settings Collection Types
+export interface UserSettings {
+  id?: string;
+  userId: string;
+  theme: 'light' | 'dark';
+  notifications: {
+    enabled: boolean;
+    email: boolean;
+    push: boolean;
+  };
+  privacy: {
+    publicProfile: boolean;
+  };
+  dataSync: {
+    enabled: boolean;
+  };
+  dailyStepsTarget: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 } 

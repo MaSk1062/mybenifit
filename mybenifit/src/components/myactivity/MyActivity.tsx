@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
 import { extendedActivityService, firestoreUtils } from '../../services/firestore';
 import type { ExtendedActivity } from '../../types/firestore';
+import NavBar from '../nav/nav';
 
 // --- shadcn/ui Component Definitions (Minimal for Self-Containment) ---
 
@@ -543,7 +544,7 @@ function ActivityLogger() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-black">
-              Welcome back, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
+              Hello!, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
             </h3>
             <p className="text-sm text-gray-600">
               User ID: {currentUser.uid}
@@ -557,7 +558,7 @@ function ActivityLogger() {
               Last sign in: {currentUser.metadata.lastSignInTime ? 
                 new Date(currentUser.metadata.lastSignInTime).toLocaleDateString() : 'Unknown'}
             </p>
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
               size="sm"
@@ -565,7 +566,7 @@ function ActivityLogger() {
               className="text-black border-black hover:bg-gray-200"
             >
               Sign Out
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
@@ -640,8 +641,8 @@ function ActivityLogger() {
           </div>
         </CardHeader>
         <CardContent>
-          {error && <p className="text-black text-sm mb-4 text-center">{error}</p>}
-          {message && <p className="text-black text-sm mb-4 text-center">{message}</p>}
+          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+          {message && <p className="text-green-600 text-sm mb-4 text-center">{message}</p>}
 
           <form onSubmit={handleLogActivity} className="space-y-4">
             <div>
@@ -734,7 +735,7 @@ function ActivityLogger() {
             <div className="flex gap-2">
               <Button 
                 type="submit" 
-                className="flex-1 bg-black hover:bg-gray-800"
+                className="flex-1 bg-black text-white hover:bg-gray-800"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (editingActivity ? 'Updating...' : 'Logging Activity...') : (editingActivity ? 'Update Activity' : 'Log Activity')}
@@ -798,7 +799,7 @@ function ActivityLogger() {
             <p className="text-gray-600 mb-4">Start your fitness journey by logging your first activity!</p>
             <Button 
               onClick={() => document.getElementById('activityType')?.focus()}
-              className="bg-black hover:bg-gray-800"
+              className="bg-black text-white hover:bg-gray-800"
             >
               Log Your First Activity
             </Button>
@@ -869,9 +870,11 @@ function ActivityLogger() {
                       Edit
                     </Button>
                     <Button
-                      variant="destructive"
+                      // Modified: Changed variant to 'default' and applied custom classes for black background and white text
+                      variant="default"
                       size="sm"
                       onClick={() => activity.id && handleDeleteActivity(activity.id)}
+                      className="bg-black text-white hover:bg-gray-800" 
                     >
                       Delete
                     </Button>
@@ -889,13 +892,15 @@ function ActivityLogger() {
 // Minimal App component to render the ActivityLogger
 function MyActivity() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-white p-4">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-black mt-8 text-center">
-        <h1 className="text-3xl font-extrabold text-black mb-4">MyBenYfit</h1>
-        <p className="text-lg text-black mb-2">Welcome to your fitness activity tracker!</p>
-        <p className="text-sm text-gray-600 mb-6">Your data is securely stored in the cloud.</p>
+    <div className="min-h-screen flex flex-col bg-white">
+      <NavBar />
+      <div className="flex-1 flex flex-col items-center justify-start p-4">
+        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-black mt-8 text-center">
+          <p className="text-lg text-black mb-2">Log your activities here!</p>
+          <p className="text-sm text-gray-600 mb-6">Your data is securely stored in the cloud.</p>
+        </div>
+        <ActivityLogger />
       </div>
-      <ActivityLogger />
     </div>
   );
 }

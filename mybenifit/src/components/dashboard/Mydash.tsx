@@ -149,7 +149,17 @@ function Dashboard() {
             userId,
             dailyStepsTarget: 10000,
             theme: 'dark',
-            notifications: true,
+            notifications: {
+              enabled: true,
+              email: true,
+              push: false
+            },
+            privacy: {
+              publicProfile: false
+            },
+            dataSync: {
+              enabled: true
+            }
           });
         }
 
@@ -377,7 +387,17 @@ function Dashboard() {
           userId,
           dailyStepsTarget: stepsTarget,
           theme: 'dark',
-          notifications: true,
+          notifications: {
+            enabled: true,
+            email: true,
+            push: false
+          },
+          privacy: {
+            publicProfile: false
+          },
+          dataSync: {
+            enabled: true
+          }
         });
       }
     } catch (error) {
@@ -530,7 +550,7 @@ function Dashboard() {
             </Card>
 
             {/* Quick Access Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <Link to="/activities" className="block">
                 <Card className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
                   <div className="text-center">
@@ -563,6 +583,18 @@ function Dashboard() {
                     </div>
                     <h3 className="font-semibold text-black">Workouts</h3>
                     <p className="text-sm text-gray-600">Plan and log workout sessions</p>
+                  </div>
+                </Card>
+              </Link>
+              
+              <Link to="/analytics" className="block">
+                <Card className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-white text-xl">📊</span>
+                    </div>
+                    <h3 className="font-semibold text-black">Analytics</h3>
+                    <p className="text-sm text-gray-600">View detailed progress insights</p>
                   </div>
                 </Card>
               </Link>
@@ -884,13 +916,13 @@ function Dashboard() {
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-black">Dashboard</h1>
-          <div className="flex items-center space-x-4">
+          <h1 className="text-3xl font-bold text-black">MyBenyfit Dashboard</h1>
+          {/* <div className="flex items-center space-x-4">
             <span className="text-black">Welcome, {currentUser.displayName || currentUser.email || 'User'}!</span>
             <Button onClick={handleSignOut} className="bg-black hover:bg-gray-800">
               Sign Out
             </Button>
-          </div>
+          </div> */}
         </div>
 
         {/* Tab Navigation */}

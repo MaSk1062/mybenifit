@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
 import { goalService, firestoreUtils } from '../../services/firestore';
 import type { Goal } from '../../types/firestore';
+import NavBar from '../nav/nav';
 
 // --- shadcn/ui Component Definitions (Minimal for Self-Containment) ---
 
@@ -154,7 +155,7 @@ function Goals() {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       console.log('Auth state changed:', user ? `User ${user.uid} signed in` : 'User signed out');
       setCurrentUser(user);
-      
+
       if (user) {
         console.log('User details:', {
           uid: user.uid,
@@ -172,7 +173,7 @@ function Goals() {
   useEffect(() => {
     if (currentUser) {
       loadUserGoals();
-      
+
       // Set up real-time listener for goal updates
       const unsubscribe = goalService.subscribeToUserGoals(currentUser.uid, (updatedGoals) => {
         setGoals(updatedGoals);
@@ -195,13 +196,13 @@ function Goals() {
       setLoading(true);
       setError(''); // Clear any previous errors
       setMessage(''); // Clear any previous messages
-      
+
       console.log('Loading goals for user:', currentUser.uid);
       const userGoals = await goalService.getGoalsByUser(currentUser.uid, filterAchieved);
-      
+
       console.log('Loaded goals:', userGoals);
       setGoals(userGoals);
-      
+
       if (userGoals.length === 0) {
         setMessage('No goals found. Create your first goal to get started!');
       } else {
@@ -211,7 +212,7 @@ function Goals() {
       }
     } catch (error) {
       console.error('Error loading goals:', error);
-      
+
       // Handle specific error types
       if (error instanceof Error) {
         if (error.message.includes('permission')) {
@@ -254,7 +255,7 @@ function Goals() {
 
     try {
       setIsSubmitting(true);
-      
+
       const goalData: Omit<Goal, 'id'> = {
         userId: currentUser.uid,
         type: goalType,
@@ -315,7 +316,7 @@ function Goals() {
 
     try {
       setIsSubmitting(true);
-      
+
       const updatedGoal: Partial<Goal> = {
         type: goalType,
         target: targetValue,
@@ -354,7 +355,7 @@ function Goals() {
 
   const handleDeleteGoal = async (goalId: string) => {
     if (!currentUser) return;
-    
+
     try {
       await goalService.deleteGoal(goalId);
       setMessage('Goal deleted successfully!');
@@ -440,8 +441,8 @@ function Goals() {
             <div className="text-center space-y-4">
               <p className="text-black">Please sign in to view and manage your goals.</p>
               <div className="flex justify-center">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => window.location.href = '/signin'} // Redirect to your sign-in page
                 >
                   Go to Sign In
@@ -455,19 +456,22 @@ function Goals() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-white p-4">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-black mt-8 text-center">
-        <h1 className="text-3xl font-extrabold text-black mb-4">MyBenYfit</h1>
-        <p className="text-lg text-black mb-2">Set Your Fitness Goals</p>
-        <p className="text-sm text-gray-600 mb-6">Track your progress and achieve your targets!</p>
-      </div>
-      
+    <div className="min-h-screen flex flex-col bg-white">
+      <NavBar />
+      <div className="flex-1 flex flex-col items-center justify-start p-4">
+        {/* Updated Goal Header */}
+        <div className="text-center py-8">
+          <p className="text-xl text-black mb-4">Set and Achieve Your Fitness Goals</p>
+          <p className="text-md text-gray-700">Track your progress, stay motivated, and reach new milestones!</p>
+        </div>
+        {/* End Updated Goal Header */}
+
       {/* User Information */}
       <div className="w-full max-w-2xl mx-auto mb-6 p-4 bg-gray-100 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-black">
-              Welcome back, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
+              Come Onn!!!!!, {currentUser.displayName || currentUser.email?.split('@')[0] || 'User'}!
             </h3>
             <p className="text-sm text-gray-600">
               User ID: {currentUser.uid}
@@ -478,10 +482,10 @@ function Goals() {
               {currentUser.email}
             </p>
             <p className="text-xs text-gray-500 mb-2">
-              Last sign in: {currentUser.metadata.lastSignInTime ? 
+              Last sign in: {currentUser.metadata.lastSignInTime ?
                 new Date(currentUser.metadata.lastSignInTime).toLocaleDateString() : 'Unknown'}
             </p>
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
               size="sm"
@@ -489,7 +493,7 @@ function Goals() {
               className="text-black border-black hover:bg-gray-200"
             >
               Sign Out
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
@@ -529,8 +533,8 @@ function Goals() {
             </div>
           </CardHeader>
           <CardContent>
-            {error && <p className="text-black text-sm mb-4 text-center">{error}</p>}
-            {message && <p className="text-black text-sm mb-4 text-center">{message}</p>}
+            {error && <p className="text-destructive text-sm mb-4 text-center">{error}</p>}
+            {message && <p className="text-green-600 text-sm mb-4 text-center">{message}</p>}
 
             <form onSubmit={editingGoal ? handleUpdateGoal : handleCreateGoal} className="space-y-4">
               <div>
@@ -587,17 +591,17 @@ function Goals() {
               </div>
 
               <div className="flex gap-2">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="flex-1 bg-black hover:bg-gray-800"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (editingGoal ? 'Updating...' : 'Creating...') : (editingGoal ? 'Update Goal' : 'Create Goal')}
                 </Button>
-                
+
                 {editingGoal && (
-                  <Button 
-                    type="button" 
+                  <Button
+                    type="button"
                     variant="outline"
                     onClick={handleCancelEdit}
                     disabled={isSubmitting}
@@ -703,7 +707,7 @@ function Goals() {
             </div>
             <h3 className="text-lg font-medium text-black mb-2">No goals yet</h3>
             <p className="text-gray-600 mb-4">Start your fitness journey by setting your first goal!</p>
-            <Button 
+            <Button
               onClick={() => document.getElementById('goalType')?.focus()}
               className="bg-black hover:bg-gray-800"
             >
@@ -715,7 +719,7 @@ function Goals() {
             {goals.map((goal) => {
               const progress = calculateProgress(goal);
               const status = getGoalStatus(goal);
-              
+
               return (
                 <Card key={goal.id} className="bg-white p-4 shadow-sm border border-black">
                   <div className="flex justify-between items-start">
@@ -730,10 +734,10 @@ function Goals() {
                           'bg-gray-100 text-black'
                         }`}>
                           {status === 'achieved' ? 'Achieved' :
-                           status === 'overdue' ? 'Overdue' : 'In Progress'}
+                            status === 'overdue' ? 'Overdue' : 'In Progress'}
                         </span>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
                         <div>
                           <p className="text-gray-600">Target</p>
@@ -757,7 +761,7 @@ function Goals() {
 
                       {/* Progress Bar */}
                       <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
-                        <div 
+                        <div
                           className={`h-2 rounded-full transition-all duration-300 ${
                             progress >= 100 ? 'bg-black' :
                             progress >= 75 ? 'bg-gray-600' :
@@ -772,7 +776,7 @@ function Goals() {
                         Started: {goal.startDate.toDate().toLocaleDateString()}
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2 ml-4">
                       <Button
                         variant="outline"
@@ -782,9 +786,10 @@ function Goals() {
                         Edit
                       </Button>
                       <Button
-                        variant="destructive"
+                        variant="destructive" // This variant usually has predefined styles. Let's override it.
                         size="sm"
                         onClick={() => goal.id && handleDeleteGoal(goal.id)}
+                        className="bg-black text-white hover:bg-gray-800" // Added custom classes here
                       >
                         Delete
                       </Button>
@@ -796,8 +801,9 @@ function Goals() {
           </div>
         )}
       </div>
+      </div>
     </div>
   );
 }
 
-export default Goals; 
+export default Goals;
