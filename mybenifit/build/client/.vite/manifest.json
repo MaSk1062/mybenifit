@@ -1,0 +1,225 @@
+{
+  "_LineChart-BAYTINQs.js": {
+    "file": "assets/LineChart-BAYTINQs.js",
+    "name": "LineChart",
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_index-CTf9-l9a.js"
+    ]
+  },
+  "_chunk-EF7DTUVF-Boj4Qu73.js": {
+    "file": "assets/chunk-EF7DTUVF-Boj4Qu73.js",
+    "name": "chunk-EF7DTUVF"
+  },
+  "_firebase-Db5tcxcc.js": {
+    "file": "assets/firebase-Db5tcxcc.js",
+    "name": "firebase"
+  },
+  "_firestore-yvp8jBDT.js": {
+    "file": "assets/firestore-yvp8jBDT.js",
+    "name": "firestore",
+    "imports": [
+      "_firebase-Db5tcxcc.js"
+    ]
+  },
+  "_index-CTf9-l9a.js": {
+    "file": "assets/index-CTf9-l9a.js",
+    "name": "index",
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js"
+    ]
+  },
+  "_mybenyfitImage-DNNLNVOb.js": {
+    "file": "assets/mybenyfitImage-DNNLNVOb.js",
+    "name": "mybenyfitImage",
+    "assets": [
+      "assets/mybenyfitImage-ovZfX16N.jpeg"
+    ]
+  },
+  "_nav-CVT91Aez.js": {
+    "file": "assets/nav-CVT91Aez.js",
+    "name": "nav",
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js"
+    ]
+  },
+  "src/assets/mybenyfitImage.jpeg": {
+    "file": "assets/mybenyfitImage-ovZfX16N.jpeg",
+    "src": "src/assets/mybenyfitImage.jpeg"
+  },
+  "src/catchall.tsx?__react-router-build-client-route": {
+    "file": "assets/catchall-D-bNJUuu.js",
+    "name": "catchall",
+    "src": "src/catchall.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "src/components/home/LandingPage.tsx?__react-router-build-client-route",
+      "_firebase-Db5tcxcc.js"
+    ]
+  },
+  "src/components/analytics/Analytics.tsx?__react-router-build-client-route": {
+    "file": "assets/Analytics-Chvy56pD.js",
+    "name": "Analytics",
+    "src": "src/components/analytics/Analytics.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_nav-CVT91Aez.js",
+      "_firestore-yvp8jBDT.js",
+      "_LineChart-BAYTINQs.js",
+      "_index-CTf9-l9a.js"
+    ]
+  },
+  "src/components/dashboard/Mydash.tsx?__react-router-build-client-route": {
+    "file": "assets/Mydash-DBxwZ-rN.js",
+    "name": "Mydash",
+    "src": "src/components/dashboard/Mydash.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_firestore-yvp8jBDT.js",
+      "_LineChart-BAYTINQs.js",
+      "_index-CTf9-l9a.js"
+    ]
+  },
+  "src/components/goals/Goals.tsx?__react-router-build-client-route": {
+    "file": "assets/Goals-CuCY80B7.js",
+    "name": "Goals",
+    "src": "src/components/goals/Goals.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_firestore-yvp8jBDT.js",
+      "_nav-CVT91Aez.js"
+    ]
+  },
+  "src/components/home/LandingPage.tsx?__react-router-build-client-route": {
+    "file": "assets/LandingPage-C8HWdoiI.js",
+    "name": "LandingPage",
+    "src": "src/components/home/LandingPage.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js"
+    ]
+  },
+  "src/components/login/LoginScreen.tsx?__react-router-build-client-route": {
+    "file": "assets/LoginScreen-j7Ug5544.js",
+    "name": "LoginScreen",
+    "src": "src/components/login/LoginScreen.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_mybenyfitImage-DNNLNVOb.js"
+    ]
+  },
+  "src/components/myactivity/MyActivity.tsx?__react-router-build-client-route": {
+    "file": "assets/MyActivity-C5_w5QPz.js",
+    "name": "MyActivity",
+    "src": "src/components/myactivity/MyActivity.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_firestore-yvp8jBDT.js",
+      "_nav-CVT91Aez.js"
+    ]
+  },
+  "src/components/privacy/Privacy.tsx?__react-router-build-client-route": {
+    "file": "assets/Privacy-CBYmRS9H.js",
+    "name": "Privacy",
+    "src": "src/components/privacy/Privacy.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_nav-CVT91Aez.js",
+      "_firebase-Db5tcxcc.js"
+    ]
+  },
+  "src/components/profile/MyProfile.tsx?__react-router-build-client-route": {
+    "file": "assets/MyProfile-BO30es_5.js",
+    "name": "MyProfile",
+    "src": "src/components/profile/MyProfile.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_nav-CVT91Aez.js",
+      "_firestore-yvp8jBDT.js"
+    ]
+  },
+  "src/components/settings/Mysettings.tsx?__react-router-build-client-route": {
+    "file": "assets/Mysettings-vMtM62vP.js",
+    "name": "Mysettings",
+    "src": "src/components/settings/Mysettings.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_firestore-yvp8jBDT.js",
+      "_nav-CVT91Aez.js"
+    ]
+  },
+  "src/components/signup/SignInScreen.tsx?__react-router-build-client-route": {
+    "file": "assets/SignInScreen-C5tTvDrT.js",
+    "name": "SignInScreen",
+    "src": "src/components/signup/SignInScreen.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_mybenyfitImage-DNNLNVOb.js"
+    ]
+  },
+  "src/components/terms/Terms.tsx?__react-router-build-client-route": {
+    "file": "assets/Terms-CZzZXOW1.js",
+    "name": "Terms",
+    "src": "src/components/terms/Terms.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_nav-CVT91Aez.js",
+      "_firebase-Db5tcxcc.js"
+    ]
+  },
+  "src/components/workouts/Workouts.tsx?__react-router-build-client-route": {
+    "file": "assets/Workouts-BCgxDNux.js",
+    "name": "Workouts",
+    "src": "src/components/workouts/Workouts.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_firebase-Db5tcxcc.js",
+      "_firestore-yvp8jBDT.js",
+      "_nav-CVT91Aez.js"
+    ]
+  },
+  "src/entry.client.tsx": {
+    "file": "assets/entry.client-DzMKBH_P.js",
+    "name": "entry.client",
+    "src": "src/entry.client.tsx",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js",
+      "_index-CTf9-l9a.js"
+    ],
+    "css": [
+      "assets/entry-UE9Sdwwp.css"
+    ]
+  },
+  "src/root.tsx?__react-router-build-client-route": {
+    "file": "assets/root-C535UPxZ.js",
+    "name": "root",
+    "src": "src/root.tsx?__react-router-build-client-route",
+    "isEntry": true,
+    "imports": [
+      "_chunk-EF7DTUVF-Boj4Qu73.js"
+    ]
+  }
+}

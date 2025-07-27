@@ -417,16 +417,7 @@ function ActivityLogger() {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-      console.log('User signed out successfully');
-      // No need to clear states here, auth.onAuthStateChanged will handle it
-    } catch (error) {
-      console.error('Error signing out:', error);
-      setError('Failed to sign out. Please try again.');
-    }
-  };
+
 
   const handleExportActivities = () => {
     if (activities.length === 0) {

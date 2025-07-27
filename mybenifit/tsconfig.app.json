@@ -21,7 +21,14 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Path mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["src", "tailwind.config.js"]
+  "include": ["src", "tailwind.config.js"],
+  "exclude": ["src/**/__tests__/**", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }

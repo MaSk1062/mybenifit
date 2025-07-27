@@ -82,7 +82,7 @@ describe('Navigation Component', () => {
   });
 
   it('should show sign in link when not authenticated', () => {
-    vi.mocked(require('../../../config/firebase').auth.onAuthStateChanged).mockImplementation((callback) => {
+    vi.mocked(require('../../../config/firebase').auth.onAuthStateChanged).mockImplementation((callback: any) => {
       callback(null);
       return vi.fn();
     });

@@ -14,9 +14,9 @@ import {
   serverTimestamp,
   writeBatch,
   onSnapshot,
-  QuerySnapshot
+
 } from 'firebase/firestore';
-import type { DocumentData } from 'firebase/firestore';
+
 import { db } from '../firebase';
 import type {
   Profile,
@@ -25,7 +25,7 @@ import type {
   Goal,
   Workout,
   ExtendedActivity,
-  Exercise,
+
   UserSettings
 } from '../types/firestore';
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Mydash from '../Mydash';
 import { mockUser } from '../../../test/utils';
@@ -48,7 +48,7 @@ describe('Dashboard Component', () => {
   });
 
   it('should show sign in required when not authenticated', () => {
-    vi.mocked(require('../../../config/firebase').auth.onAuthStateChanged).mockImplementation((callback) => {
+    vi.mocked(require('../../../config/firebase').auth.onAuthStateChanged).mockImplementation((callback: any) => {
       callback(null);
       return vi.fn();
     });

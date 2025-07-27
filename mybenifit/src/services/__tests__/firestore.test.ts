@@ -49,8 +49,7 @@ describe('Firestore Services', () => {
 
   describe('workoutService', () => {
     it('should create a workout', async () => {
-      const workoutData = { ...mockWorkout };
-      delete workoutData.id;
+      const { id, ...workoutData } = mockWorkout;
       
       mockAddDoc.mockResolvedValue({ id: 'new-workout-id' });
       

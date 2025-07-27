@@ -1,10 +1,9 @@
 import React from "react"
-import { GalleryVerticalEnd, Apple, Chrome, Facebook } from "lucide-react" // Import specific icons
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth" // Added signInWithEmailAndPassword for login form
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useState } from "react"
 import { auth } from "../../firebase.ts"
 import { useNavigate, Link } from "react-router-dom" // Corrected import for react-router-dom
-import NavBar from "../nav/nav"
+
 import homeImage from "../../assets/mybenyfitImage.jpeg"
 
 // Utility function for class names

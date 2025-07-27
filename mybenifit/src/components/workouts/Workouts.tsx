@@ -199,10 +199,8 @@ function Workouts() {
   const [weight, setWeight] = useState('');
   const [durationSec, setDurationSec] = useState('');
   const [distance, setDistance] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(''); // This state is currently unused, can be removed if not needed
 
   // Template and UI state
-  const [showTemplates, setShowTemplates] = useState(false); // This state is currently unused for toggling templates, but the templates are rendered directly. Can be removed if not used for explicit toggle button.
   const [showExerciseSuggestions, setShowExerciseSuggestions] = useState(false);
   const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
 
@@ -381,7 +379,7 @@ function Workouts() {
     setWeight('');
     setDurationSec('');
     setDistance('');
-    setSelectedCategory('');
+
     setError(''); // Clear error after successful add
     setShowDistanceInput(false); // Reset visibility after adding
   };
@@ -403,7 +401,7 @@ function Workouts() {
         if (ex.distance !== undefined && ex.distance !== null && ex.distance > 0) tempExercise.distance = ex.distance;
         return tempExercise;
       }));
-      setShowTemplates(false); // This state still unused for toggle, but setting it here.
+
       setMessage(`Loaded ${templateName} template!`);
       
       // Reset exercise input form and hide distance input when loading template
@@ -609,16 +607,7 @@ function Workouts() {
     })
     .filter(cat => cat.exercises.length > 0);
 
-  // Handle user sign out
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-      console.log('User signed out successfully');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      setError('Failed to sign out. Please try again.');
-    }
-  };
+
 
   // Export workout data as JSON
   const handleExportWorkouts = () => {

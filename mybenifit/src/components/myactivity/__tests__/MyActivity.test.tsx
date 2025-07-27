@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MyActivity from '../MyActivity';
-import { mockUser, mockActivity } from '../../../test/utils';
+import { mockUser } from '../../../test/utils';
 
 // Mock the auth and services
 vi.mock('../../../config/firebase', () => ({
@@ -53,7 +53,7 @@ describe('MyActivity Component', () => {
   });
 
   it('should show sign in required when not authenticated', () => {
-    vi.mocked(require('../../../config/firebase').auth.onAuthStateChanged).mockImplementation((callback) => {
+    vi.mocked(require('../../../config/firebase').auth.onAuthStateChanged).mockImplementation((callback: any) => {
       callback(null);
       return vi.fn();
     });
@@ -181,8 +181,7 @@ describe('MyActivity Component', () => {
       click: vi.fn(),
     };
     const mockCreateElement = vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as any);
-    const mockAppendChild = vi.spyOn(document.body, 'appendChild').mockReturnValue(mockAnchor as any);
-    const mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockReturnValue(mockAnchor as any);
+
 
     render(<MyActivity />);
 

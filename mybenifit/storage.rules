@@ -1,0 +1,61 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the file
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to check if file is a valid image
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 5 * 1024 * 1024; // 5MB limit
+    }
+    
+    // Helper function to check if file is a valid document
+    function isValidDocument() {
+      return request.resource.contentType.matches('application/pdf|text/plain|application/json') &&
+             request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    }
+
+    // Profile images - users can only upload/access their own profile images
+    match /profile-images/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isValidImage();
+    }
+    
+    // Workout images - users can only upload/access their own workout images
+    match /workout-images/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isValidImage();
+    }
+    
+    // Activity images - users can only upload/access their own activity images
+    match /activity-images/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isValidImage();
+    }
+    
+    // Export files - users can only access their own exported data
+    match /exports/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidDocument();
+    }
+    
+    // General user files - users can only access their own files
+    match /user-files/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && (isValidImage() || isValidDocument());
+    }
+    
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+} 

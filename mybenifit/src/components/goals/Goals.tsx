@@ -369,15 +369,7 @@ function Goals() {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-      console.log('User signed out successfully');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      setError('Failed to sign out. Please try again.');
-    }
-  };
+
 
   const handleExportGoals = () => {
     if (goals.length === 0) {

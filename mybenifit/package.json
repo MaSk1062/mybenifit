@@ -11,7 +11,16 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "deploy": "npm run build && firebase deploy",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy:firestore": "firebase deploy --only firestore",
+    "deploy:storage": "firebase deploy --only storage",
+    "firebase:login": "firebase login",
+    "firebase:init": "firebase init",
+    "firebase:emulators": "firebase emulators:start",
+    "firebase:emulators:export": "firebase emulators:export ./emulator-data",
+    "firebase:emulators:import": "firebase emulators:start --import=./emulator-data"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
